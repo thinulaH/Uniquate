@@ -4,6 +4,7 @@ include_once 'auth/session.php';
 include_once 'includes/header.php';
 ?>
 
+
 <div class="container">
     <div style="margin: 2rem 0;">
         <h1>Help & Support</h1>
@@ -74,14 +75,47 @@ include_once 'includes/header.php';
             <h3>📞 Contact Support</h3>
             <p>Need additional help?</p>
             <ul style="margin: 1rem 0; padding-left: 2rem;">
-                <li><strong>Email:</strong> halls@university.edu</li>
-                <li><strong>Phone:</strong> (555) 123-4567</li>
+                <li><strong>Email:</strong> 2023s20228@stu.cmb.ac.lk</li>
+                <li><strong>Phone:</strong> (+94) 70 669 2736</li>
                 <li><strong>Office Hours:</strong> Monday-Friday, 8:00 AM - 5:00 PM</li>
-                <li><strong>Location:</strong> Administration Building, Room 201</li>
+                <li><strong>Location:</strong> University of Colombo, 94 Cumaratunga Munidasawa Mw, Colombo 00700</li>
             </ul>
         </div>
-        
+
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
+            <!-- FAQ -->
+            <section>
+                <h2>Frequently Asked Questions (FAQ)</h2><br>
+
+                <details>
+                <summary>What should I do if I forget my password?</summary>
+                <p><br>Please contact the system administrator to reset your password.</p>
+                </details>
+
+                <details>
+                <summary>How do I know if my booking was successful?</summary>
+                <p><br>After booking, you will see a confirmation message and can view it in your booking history.</p>
+                </details>
+
+                <details>
+                <summary>Can I cancel a booking after confirmation?</summary>
+                <p><br>Yes, you can cancel from the "My Bookings" page before the booking date.</p>
+                </details>
+
+                <details>
+                <summary>How can I check available halls and rooms before booking?</summary>
+                <p><br>You can use the "Search Availability" option on the homepage to view all free halls and rooms by date and time.</p>
+                </details>
+
+                <details>
+                <summary>What browsers work best for this system?</summary>
+                <p><br>The system works best on Google Chrome, Mozilla Firefox, and Microsoft Edge.</p>
+                </details>
+            </section>
+        </div>  
+        
+        
+        <!-- <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
             <h3>❓ Frequently Asked Questions</h3>
             
             <div style="margin: 1rem 0;">
@@ -103,7 +137,7 @@ include_once 'includes/header.php';
                 <h4>Are there any restrictions on event types?</h4>
                 <p>Most academic and professional events are welcome. Commercial events may require special approval and different pricing.</p>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 

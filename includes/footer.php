@@ -19,6 +19,7 @@
                     <?php if (isLoggedIn()): ?>
                         <a href="my_bookings.php" style="color: #ccc; text-decoration: none;">My Bookings</a>
                     <?php endif; ?>
+                    <a href="team.php" style="color: #ccc; text-decoration: none;">Team</a>
                 </div>
             </div>
             
