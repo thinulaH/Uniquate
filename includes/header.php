@@ -373,6 +373,25 @@
                 justify-content: center;
             }
         }
+
+        details {
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        summary {
+            font-weight: bold;
+            color: #444;
+        }
+
+        details[open] summary {
+            color: #0073e6;
+        }
+        
     </style>
 </head>
 <body>
