@@ -38,7 +38,7 @@
         /* Removed duplicate body definition to ensure consistent gradient background for all pages */
 
         .navbar {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.44);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
@@ -110,7 +110,6 @@
         .btn-primary {
             background: var(--purple);
             color: white;
-            margin-bottom: 5px;
         }
 
         .btn-primary:hover {
