@@ -17,6 +17,37 @@ $booking = new Booking($db);
 $message = '';
 $error = '';
 
+// Handle hall deletion
+if (isset($_GET['delete_hall'])) {
+    $hall_id = $_GET['delete_hall'];
+
+    // Optional: delete hall image from server
+    $hallData = $hall->getHallById($hall_id);
+    if ($hallData && !empty($hallData['image_url']) && file_exists($hallData['image_url'])) {
+        unlink($hallData['image_url']);
+    }
+
+    // Use new Hall delete() method that returns ['success'=>bool, 'message'=>string]
+    $deleteResult = $hall->delete($hall_id);
+    if (isset($deleteResult['success']) && $deleteResult['success']) {
+        $message = $deleteResult['message'] ?? 'Hall deleted successfully';
+        // Do not redirect, so alert shows
+    } else {
+        $error = $deleteResult['message'] ?? 'Failed to delete hall';
+    }
+}
+
+// Edit hall
+$editHall = null;
+
+if (isset($_GET['edit_hall'])) {
+    $hall_id = $_GET['edit_hall'];
+    $editHall = $hall->getHallById($hall_id);
+    if (!$editHall) {
+        $error = "Hall not found.";
+    }
+}
+
 // Handle booking status updates
 if (isset($_POST['update_booking_status'])) {
     $booking_id = $_POST['booking_id'];
@@ -37,7 +68,28 @@ if (isset($_POST['add_hall'])) {
     $hall->type = $_POST['type'];
     $hall->location = $_POST['location'];
     $hall->price_per_hour = $_POST['price_per_hour'];
-    $hall->image_url = $_POST['image_url'];
+
+    // Handle file upload
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileTmpPath = $_FILES['image']['tmp_name'];
+        $fileName = basename($_FILES['image']['name']);
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $newFileName = uniqid('hall_', true) . '.' . $fileExt;
+        $destPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            $hall->image_url = $destPath;
+        } else {
+            $hall->image_url = '';
+        }
+    } else {
+        $hall->image_url = '';
+    }
+
     $hall->amenities = $_POST['amenities'];
     
     if ($hall->create()) {
@@ -47,6 +99,52 @@ if (isset($_POST['add_hall'])) {
     }
 }
 
+// Hall update 
+// Handle hall update
+if (isset($_POST['update_hall'])) {
+    $hall_id = $_POST['hall_id'];
+    $hall->name = $_POST['name'];
+    $hall->description = $_POST['description'];
+    $hall->capacity = $_POST['capacity'];
+    $hall->type = $_POST['type'];
+    $hall->location = $_POST['location'];
+    $hall->price_per_hour = $_POST['price_per_hour'];
+    $hall->amenities = $_POST['amenities'];
+
+    // Handle optional new image
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/';
+        if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
+
+        $fileTmpPath = $_FILES['image']['tmp_name'];
+        $fileName = basename($_FILES['image']['name']);
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $newFileName = uniqid('hall_', true) . '.' . $fileExt;
+        $destPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($fileTmpPath, $destPath)) {
+            // Delete old image
+            if (!empty($_POST['current_image']) && file_exists($_POST['current_image'])) {
+                unlink($_POST['current_image']);
+            }
+            $hall->image_url = $destPath;
+        }
+    } else {
+        $hall->image_url = $_POST['current_image']; // keep old image
+    }
+
+if ($hall->update($hall_id)) {
+    $message = "Hall updated successfully.";
+    // Reset edit mode so the form returns to "Add New Hall"
+    $editHall = null;
+    $is_edit = false;
+} else {
+    $error = "Failed to update hall.";
+}
+}
+
+
+// Refresh data after any add/update/delete
 $all_bookings = $booking->getAllBookings();
 $all_users = $user->getAllUsers();
 $all_halls = $hall->getAllHalls();
@@ -88,49 +186,79 @@ include_once 'includes/header.php';
         </div>
     </div>
     
-    <!-- Add New Hall Form -->
+    <!-- Add/Edit Hall Form -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
-        <h3>Add New Hall</h3>
-        <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <h3><?= isset($editHall) && $editHall ? 'Edit Hall' : 'Add New Hall' ?></h3>
+            <?php if (isset($editHall) && $editHall): ?>
+                <a href="admin.php" class="btn btn-secondary" style="margin-left: 1rem;">Add New Hall</a>
+            <?php endif; ?>
+        </div><br>
+        <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <?php
+                $form_name = htmlspecialchars($editHall['name'] ?? '');
+                $form_location = htmlspecialchars($editHall['location'] ?? '');
+                $form_capacity = htmlspecialchars($editHall['capacity'] ?? '');
+                $form_type = htmlspecialchars($editHall['type'] ?? '');
+                $form_price = htmlspecialchars($editHall['price_per_hour'] ?? '');
+                $form_amenities = htmlspecialchars($editHall['amenities'] ?? '');
+                $form_description = htmlspecialchars($editHall['description'] ?? '');
+                $form_image = htmlspecialchars($editHall['image_url'] ?? '');
+                $is_edit = isset($editHall) && $editHall;
+            ?>
+            <?php if ($is_edit): ?>
+                <input type="hidden" name="hall_id" value="<?= htmlspecialchars($editHall['id']) ?>">
+                <input type="hidden" name="current_image" value="<?= htmlspecialchars($editHall['image_url']) ?>">
+            <?php endif; ?>
             <div class="form-group">
                 <label for="name">Hall Name</label>
-                <input type="text" id="name" name="name" required>
+                <input type="text" id="name" name="name" required value="<?= $form_name ?>">
             </div>
             <div class="form-group">
                 <label for="location">Location</label>
-                <input type="text" id="location" name="location" required>
+                <input type="text" id="location" name="location" required value="<?= $form_location ?>">
             </div>
             <div class="form-group">
                 <label for="capacity">Capacity</label>
-                <input type="number" id="capacity" name="capacity" required>
+                <input type="number" id="capacity" name="capacity" required value="<?= $form_capacity ?>">
             </div>
             <div class="form-group">
                 <label for="type">Type</label>
                 <select id="type" name="type" required>
-                    <option value="Lecture Hall">Lecture Hall</option>
-                    <option value="Exam Hall">Exam Hall</option>
-                    <option value="Conference Hall">Conference Hall</option>
-                    <option value="Auditorium">Auditorium</option>
+                    <option value="Lecture Hall" <?= $form_type === 'Lecture Hall' ? 'selected' : '' ?>>Lecture Hall</option>
+                    <option value="Exam Hall" <?= $form_type === 'Exam Hall' ? 'selected' : '' ?>>Exam Hall</option>
+                    <option value="Conference Hall" <?= $form_type === 'Conference Hall' ? 'selected' : '' ?>>Conference Hall</option>
+                    <option value="Auditorium" <?= $form_type === 'Auditorium' ? 'selected' : '' ?>>Auditorium</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="price_per_hour">Price per Hour ($)</label>
-                <input type="number" id="price_per_hour" name="price_per_hour" step="0.01" required>
+                <input type="number" id="price_per_hour" name="price_per_hour" step="0.01" required value="<?= $form_price ?>">
             </div>
             <div class="form-group">
-                <label for="image_url">Image URL (optional)</label>
-                <input type="url" id="image_url" name="image_url">
+                <label for="image">Upload Image</label>
+                <input type="file" id="image" name="image" accept="image/*">
+                <?php if ($is_edit && $form_image): ?>
+                    <div style="margin-top: 0.5rem;">
+                        <img src="<?= htmlspecialchars($form_image) ?>" alt="Current Image" style="max-width: 120px; max-height: 90px; border-radius: 6px; border:1px solid #eee;">
+                        <small style="display: block;">Current Image</small>
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="form-group">
                 <label for="amenities">Amenities</label>
-                <input type="text" id="amenities" name="amenities" placeholder="e.g., Projector, AC, WiFi">
+                <input type="text" id="amenities" name="amenities" placeholder="e.g., Projector, AC, WiFi" value="<?= $form_amenities ?>">
             </div>
             <div class="form-group" style="grid-column: 1 / -1;">
                 <label for="description">Description</label>
-                <textarea id="description" name="description" rows="3" style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%; resize: vertical;"></textarea>
+                <textarea id="description" name="description" rows="3" style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%; resize: vertical;"><?= $form_description ?></textarea>
             </div>
             <div style="grid-column: 1 / -1;">
-                <button type="submit" name="add_hall" class="btn btn-primary">Add Hall</button>
+                <?php if ($is_edit): ?>
+                    <button type="submit" name="update_hall" class="btn btn-primary">Update Hall</button>
+                <?php else: ?>
+                    <button type="submit" name="add_hall" class="btn btn-primary">Add Hall</button>
+                <?php endif; ?>
             </div>
         </form>
     </div>
@@ -138,8 +266,9 @@ include_once 'includes/header.php';
     <!-- Manage Halls -->
      <div style= "background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
         <h3> Manage Halls</h3>
+        <br>
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
+            <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
                 <thead>
                     <tr style="background: var(--light-tan);">
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Hall Name</th>
@@ -158,9 +287,9 @@ include_once 'includes/header.php';
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['capacity']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['type']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">$<?= number_format($hall['price_per_hour'], 2) ?></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">
-                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary">Edit</a>
-                                <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger">Delete</a>
+                            <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
+                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0;">Edit</a>
+                                <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0;" onclick="return confirm('Are you sure you want to delete this hall?')">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
