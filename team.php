@@ -65,7 +65,7 @@ include_once 'includes/header.php';
             <img src="images/team/person5.svg" alt="Thinula Harischandra">
             <h3>Thinula Harischandra</h3>
             <p class="role">Team Leader & Developer</p>
-            <p>S17477</p>
+            <p>S17478</p>
         </div>
 
         <div class="member-card">
@@ -90,8 +90,8 @@ include_once 'includes/header.php';
         </div>
 
         <div class="member-card">
-            <img src="images/team/person1.svg" alt="Nilakshi Gunasekara">
-            <h3>Nilakshi Gunasekara</h3>
+            <img src="images/team/person1.svg" alt="Nilakshi Gunasena">
+            <h3>Nilakshi Gunasena</h3>
             <p class="role">Developer</p>
             <p>S17473</p>
         </div>
