@@ -130,6 +130,22 @@
             box-shadow: 0 8px 20px rgba(194, 197, 171, 0.4);
         }
 
+        .form-button {
+            margin-top: 1rem;
+            width : 100px;
+        }
+
+        .btn-danger {
+            background: #b76161ff;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #560404ff;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(90, 90, 90, 0.4);
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
