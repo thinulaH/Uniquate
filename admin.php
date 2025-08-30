@@ -16,6 +16,28 @@ $booking = new Booking($db);
 
 $message = '';
 $error = '';
+// Handle create admin
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['createAdmin'])) {
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
+
+    if ($password !== $confirm_password) {
+        $error = "Passwords do not match.";
+    } else {
+        $user->username = $username;
+        $user->email = $email;
+        $user->password = $password;
+        $user->role = 'admin';
+
+        if ($user->createAdmin()) {
+            $message = "Admin account created successfully.";
+        } else {
+            $error = "Failed to create admin account.";
+        }
+    }
+}
 
 // Handle hall deletion
 if (isset($_GET['delete_hall'])) {
@@ -186,14 +208,13 @@ include_once 'includes/header.php';
         </div>
     </div>
     
+    
     <!-- Add/Edit Hall Form -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; justify-content: flex-start; gap: 1rem;">
             <h3><?= isset($editHall) && $editHall ? 'Edit Hall' : 'Add New Hall' ?></h3>
-            <?php if (isset($editHall) && $editHall): ?>
-                <a href="admin.php" class="btn btn-secondary" style="margin-left: 1rem;">Add New Hall</a>
-            <?php endif; ?>
-        </div><br>
+        </div>
+        <br>
         <form method="POST" enctype="multipart/form-data" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <?php
                 $form_name = htmlspecialchars($editHall['name'] ?? '');
@@ -253,12 +274,18 @@ include_once 'includes/header.php';
                 <label for="description">Description</label>
                 <textarea id="description" name="description" rows="3" style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%; resize: vertical;"><?= $form_description ?></textarea>
             </div>
-            <div style="grid-column: 1 / -1;">
-                <?php if ($is_edit): ?>
-                    <button type="submit" name="update_hall" class="btn btn-primary">Update Hall</button>
-                <?php else: ?>
-                    <button type="submit" name="add_hall" class="btn btn-primary">Add Hall</button>
+            <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <?php if (isset($editHall) && $editHall): ?>
+                    <div style="align-items: right; margin-right: 1rem;">
+                        <a href="admin.php" class="btn btn-danger" style="width: 150px; font-size: 0.875rem;">Cancel</a>
+                    </div>
                 <?php endif; ?>
+                <?php if ($is_edit): ?>
+                    <button type="submit" name="update_hall" class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">Update Hall</button>
+                <?php else: ?>
+                    <button type="submit" name="add_hall" class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">Add Hall</button>
+                <?php endif; ?>
+
             </div>
         </form>
     </div>
@@ -268,7 +295,7 @@ include_once 'includes/header.php';
         <h3> Manage Halls</h3>
         <br>
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; ">
                 <thead>
                     <tr style="background: var(--light-tan);">
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Hall Name</th>
@@ -288,8 +315,8 @@ include_once 'includes/header.php';
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['type']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">LKR <?= number_format($hall['price_per_hour'], 2) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
-                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0;">Edit</a>
-                                <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0;" onclick="return confirm('Are you sure you want to delete this hall?')">Delete</a>
+                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem;">Edit</a>
+                                <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0; font-size: 0.875rem;" onclick="return confirm('Are you sure you want to delete this hall?')">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -297,6 +324,8 @@ include_once 'includes/header.php';
             </table>
         </div>
      </div>
+
+    
     
     <!-- Manage Bookings -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
@@ -353,7 +382,43 @@ include_once 'includes/header.php';
             </div>
         <?php endif; ?>
     </div>
-    
+
+    <!-- Create an admin account -->
+    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+        <div style="max-width: 100%; margin: auto;">
+            <h3 style="margin-bottom: 1rem; text-align:left;">Create Admin Account</h3>
+            <form method="POST" style="display: grid; gap: 1rem;">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required 
+                        value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>" 
+                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required 
+                        value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>" 
+                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required 
+                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required 
+                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                </div>
+                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                    <button type="submit" name="createAdmin" 
+                            class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">
+                        Add Admin
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- User Management -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
         <h3>User Management</h3><br>

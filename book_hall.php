@@ -55,7 +55,7 @@ include_once 'includes/header.php';
 <div class="container">
     <div style="margin: 2rem 0;">
         <a href="halls.php" style="color: var(--purple); text-decoration: none;">← Back to Halls</a>
-        <h1><?= htmlspecialchars($hall_data['name']) ?></h1>
+        <h1><br><?= htmlspecialchars($hall_data['name']) ?></h1>
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin: 2rem 0;">

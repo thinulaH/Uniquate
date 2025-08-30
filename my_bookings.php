@@ -58,7 +58,7 @@ include_once 'includes/header.php';
                                 </td>
                                 <td><?= date('M j, Y', strtotime($booking_item['booking_date'])) ?></td>
                                 <td><?= date('g:i A', strtotime($booking_item['start_time'])) ?> - <?= date('g:i A', strtotime($booking_item['end_time'])) ?></td>
-                                <td>$<?= number_format($booking_item['total_amount'], 2) ?></td>
+                                <td>LKR <?= number_format($booking_item['total_amount'], 2) ?></td>
                                 <td>
                                     <span class="status-badge status-<?= $booking_item['status'] ?>">
                                         <?= ucfirst($booking_item['status']) ?>

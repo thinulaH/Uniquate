@@ -72,7 +72,7 @@ include_once 'includes/header.php';
                         <span>🏫 <?= htmlspecialchars($hall_item['type'] ?: 'General') ?></span>
                         <span>🏷️ <?= htmlspecialchars($hall_item['amenities'] ?: 'Basic amenities') ?></span>
                     </div>
-                    <div class="hall-price">$<?= number_format($hall_item['price_per_hour'], 2) ?>/hour</div>
+                    <div class="hall-price">LKR <?= number_format($hall_item['price_per_hour'], 2) ?>/hour</div>
                     <p style="color: #666; margin-bottom: 1rem;"><?= htmlspecialchars(substr($hall_item['description'], 0, 100)) ?>...</p>
                     <a href="book_hall.php?id=<?= $hall_item['id'] ?>" class="btn btn-primary" style="width: 100%;">Book Now</a>
                 </div>
