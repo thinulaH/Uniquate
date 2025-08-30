@@ -232,8 +232,8 @@ include_once 'includes/header.php';
                 </select>
             </div>
             <div class="form-group">
-                <label for="price_per_hour">Price per Hour ($)</label>
-                <input type="number" id="price_per_hour" name="price_per_hour" step="0.01" required value="<?= $form_price ?>">
+                <label for="price_per_hour">Price per Hour (LKR)</label>
+                <input type="number" id="price_per_hour" name="price_per_hour" step="1000" required value="<?= $form_price ?>">
             </div>
             <div class="form-group">
                 <label for="image">Upload Image</label>
@@ -286,7 +286,7 @@ include_once 'includes/header.php';
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['location']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['capacity']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['type']) ?></td>
-                            <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">$<?= number_format($hall['price_per_hour'], 2) ?></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">LKR <?= number_format($hall['price_per_hour'], 2) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
                                 <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0;">Edit</a>
                                 <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0;" onclick="return confirm('Are you sure you want to delete this hall?')">Delete</a>
@@ -300,13 +300,13 @@ include_once 'includes/header.php';
     
     <!-- Manage Bookings -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
-        <h3>Manage Bookings</h3>
+        <h3>Manage Bookings</h3><br>
         
         <?php if (empty($all_bookings)): ?>
             <p>No bookings found.</p>
         <?php else: ?>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
+                <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
                     <thead>
                         <tr style="background: var(--light-tan);">
                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">User</th>
@@ -329,7 +329,7 @@ include_once 'includes/header.php';
                                     <?= date('M j, Y', strtotime($booking_item['booking_date'])) ?><br>
                                     <small><?= date('g:i A', strtotime($booking_item['start_time'])) ?> - <?= date('g:i A', strtotime($booking_item['end_time'])) ?></small>
                                 </td>
-                                <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">$<?= number_format($booking_item['total_amount'], 2) ?></td>
+                                <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">LKR <?= number_format($booking_item['total_amount'], 2) ?></td>
                                 <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">
                                     <span class="status-badge status-<?= $booking_item['status'] ?>">
                                         <?= ucfirst($booking_item['status']) ?>
@@ -356,9 +356,9 @@ include_once 'includes/header.php';
     
     <!-- User Management -->
     <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
-        <h3>User Management</h3>
+        <h3>User Management</h3><br>
         <div style="overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse;">
+            <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
                 <thead>
                     <tr style="background: var(--light-tan);">
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Username</th>

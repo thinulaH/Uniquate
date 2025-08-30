@@ -110,7 +110,6 @@
         .btn-primary {
             background: var(--purple);
             color: white;
-            margin-bottom: 5px;
         }
 
         .btn-primary:hover {
