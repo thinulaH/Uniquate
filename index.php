@@ -22,12 +22,12 @@ include_once 'includes/header.php';
 ?>
 
 <style>
-body {
+/* body {
     background: linear-gradient(135deg, #fffcd7ff 0%, #8e7295ff 100%);
     min-height: 100vh;
     margin: 0;
     font-family: 'Segoe UI', Arial, sans-serif;
-}
+} */
 
 .hero {
     margin-bottom: 0;
@@ -41,15 +41,15 @@ body {
     <div class="search-box">
         <form action="search.php" method="GET" class="search-form">
             <div class="form-group">
-                <label for="search">Hall Name or Location</label>
+                <!-- <label for="search">Hall Name or Location</label> -->
                 <input type="text" id="search" name="search" placeholder="Search halls...">
             </div>
             <div class="form-group">
-                <label for="date">Date</label>
+                <!-- <label for="date">Date</label> -->
                 <input type="date" id="date" name="date" min="<?= date('Y-m-d') ?>">
             </div>
             <div class="form-group" style="width:200px; height:100%;">
-                <label for="capacity">Minimum Capacity</label>
+                <!-- <label for="capacity">Minimum Capacity</label> -->
                 <select id="capacity" name="capacity">
                     <option value="">Any Size</option>
                     <option value="50">50+ People</option>
@@ -59,16 +59,17 @@ body {
                 </select>
             </div>
             <div class="form-group" style="width:200px; height:100%;">
-                <label for="type">Hall Type</label>
+                <!-- <label for="type">Hall Type</label> -->
                 <select id="type" name="type">
-                    <option value="">Any Type</option>
+                    <option value="">Type</option>
                     <option value="Lecture Hall">Lecture Hall</option>
                     <option value="Exam Hall">Exam Hall</option>
                     <option value="Conference Hall">Conference Hall</option>
                     <option value="Auditorium">Auditorium</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary btn-search">Search</button>
+        
         </form>
     </div>
 </div>

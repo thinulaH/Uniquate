@@ -64,7 +64,7 @@ include_once 'includes/header.php';
                     <option value="Auditorium" <?= ($type ?? '') == 'Auditorium' ? 'selected' : '' ?>>Auditorium</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary btn-search">Search</button>
         </form>
     </div>
     
