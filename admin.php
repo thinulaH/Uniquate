@@ -183,7 +183,7 @@ include_once 'includes/header.php';
 </div>
 
 <div class="container admin-content">
-    <div style="margin: 2rem 0;">
+    <div >
         <h1>Admin Panel</h1>
         <p>Manage halls, bookings, and users</p>
     </div>
@@ -199,19 +199,19 @@ include_once 'includes/header.php';
     <!-- Quick Stats -->
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 2rem 0;">
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="color: var(--purple);"><?= count($all_halls) ?></h3>
+            <h1 style="color: var(--purple);"><?= count($all_halls) ?></h1>
             <p>Total Halls</p>
         </div>
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="color: var(--tan);"><?= count($all_bookings) ?></h3>
+            <h1 style="color: var(--tan);"><?= count($all_bookings) ?></h1>
             <p>Total Bookings</p>
         </div>
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="color: var(--purple);"><?= count($all_users) ?></h3>
+            <h1 style="color: var(--purple);"><?= count($all_users) ?></h1>
             <p>Registered Users</p>
         </div>
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
-            <h3 style="color: var(--tan);"><?= count(array_filter($all_bookings, function($b) { return $b['status'] === 'pending'; })) ?></h3>
+            <h1 style="color: var(--tan);"><?= count(array_filter($all_bookings, function($b) { return $b['status'] === 'pending'; })) ?></h1>
             <p>Pending Requests</p>
         </div>
     </div>
