@@ -18,6 +18,7 @@
         body {
             min-height: 100vh;
             margin: 0;
+            margin-top: 100px; 
             padding: 0;
         }
 
@@ -45,11 +46,13 @@
         /* Removed duplicate body definition to ensure consistent gradient background for all pages */
 
         .navbar {
-            background: rgba(218, 198, 225, 0.62);
+            background: rgba(255, 255, 255, 0.43);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            position: sticky;
+            position: fixed;
+            left: 0;
+            right: 0;
             top: 0;
             z-index: 1000;
         }
@@ -444,7 +447,7 @@
         }
 
         .admin-sidebar {
-            height: calc(100% - 80px); /* full height minus header */
+            height: calc(100% - 80px); 
             width: 200px;
             height: 85%;
             position: fixed;
@@ -496,7 +499,7 @@
     <nav class="navbar"> 
         <div class="nav-container">
             <a href="index.php" class="logo">
-                <img src="images/logo.png" alt="Uniquate Logo" style="height: 50px;">
+                <img src="images/logo1.png" alt="Uniquate Logo" style="height: 50px;">
             </a>
             <div class="nav-links">
                 <?php if (isLoggedIn()): ?>
