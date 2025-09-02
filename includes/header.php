@@ -9,7 +9,13 @@
     <title>University Hall Booking System</title>
     <style>
 
-        html, body {
+        html {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+        body {
             min-height: 100vh;
             margin: 0;
             padding: 0;
@@ -22,6 +28,7 @@
         }
 
         body {
+            /* background: rgba(240, 236, 227, 0.8); */
             background: linear-gradient(135deg, #fffcd7ff 0%, #8e7295ff 100%);
             font-family: 'Segoe UI', Arial, sans-serif;
         }
@@ -38,7 +45,7 @@
         /* Removed duplicate body definition to ensure consistent gradient background for all pages */
 
         .navbar {
-            background: rgba(255, 255, 255, 0.44);
+            background: rgba(218, 198, 225, 0.62);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
@@ -93,7 +100,7 @@
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 25px;
+            border-radius: 10px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
@@ -175,22 +182,24 @@
         .search-box {
             background: white;
             padding: 2rem;
-            border-radius: 20px;
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: 900px;
-            margin: 2rem auto;
+            max-width: auto;
+            margin: auto;
         }
 
         .search-form {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 1rem;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
             align-items: end;
+            right: 0;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
         }
 
         .form-group label {
@@ -199,12 +208,35 @@
             color: var(--dark-gray);
         }
 
+        .btn-search {
+            height: 50px;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
         .form-group input, .form-group select {
-            padding: 0.75rem;
+            padding: 0.9rem 1rem;
             border: 2px solid #e1e5e9;
-            border-radius: 10px;
             font-size: 1rem;
             transition: border-color 0.3s ease;
+            height: 50px;
+        }
+
+        .search-form .form-group:first-child input {
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .search-form .form-group:nth-last-child(3) select {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+
+        .search-form .form-group:not(:first-child):not(:nth-last-child(2)) input,
+        .search-form .form-group:not(:first-child):not(:nth-last-child(2)) select {
+            border-radius: 0;
         }
 
         .form-group input:focus, .form-group select:focus {
@@ -221,7 +253,7 @@
 
         .hall-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -280,7 +312,7 @@
             margin: 2rem auto;
             background: white;
             padding: 2rem;
-            border-radius: 15px;
+            border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
 
@@ -315,7 +347,7 @@
 
         .bookings-table {
             background: white;
-            border-radius: 15px;
+            border-radius: 10px;
             overflow: hidden;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin: 2rem 0;
@@ -341,7 +373,7 @@
 
         .status-badge {
             padding: 0.25rem 0.75rem;
-            border-radius: 15px;
+            border-radius: 10px;
             font-size: 0.8rem;
             font-weight: 500;
         }
@@ -361,12 +393,16 @@
             color: #721c24;
         }
 
-        .footer {
+       .footer {
             background: var(--dark-gray);
             color: white;
             text-align: center;
             padding: 2rem 0;
-            margin-top: 4rem;
+            position: relative;   /* make footer fixed */
+            bottom: 0;         /* stick to bottom */
+            left: 0;
+            width: 100%;       /* span full width */
+            z-index: 20;       /* higher than sidebar (sidebar z-index: 10) */
         }
 
         @media (max-width: 100%) {
@@ -404,7 +440,54 @@
         }
 
         details[open] summary {
-            color: #0073e6;
+            color: #609edcff;
+        }
+
+        .admin-sidebar {
+            height: calc(100% - 80px); /* full height minus header */
+            width: 200px;
+            height: 85%;
+            position: fixed;
+            border-radius: 10px;
+            top: 100px; 
+            margin-left: 10px;
+            left: 0;
+            background-color: #5c475cba;
+            padding-top: 20px;
+            z-index: 10;
+        }
+
+        .admin-sidebar a {
+            padding: 12px 16px;
+            text-decoration: none;
+            font-size: 14px;
+            color: white;
+            display: block;
+        }
+
+        .admin-sidebar a:hover {
+            background-color: #3d4f5cff;
+        }
+
+        .admin-content{
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .admin-task-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+
+        #add-hall,
+        #manage-halls,
+        #manage-bookings,
+        #create-admin,
+        #user-management {
+            scroll-margin-top: 100px; /* same as your navbar height */
         }
         
     </style>

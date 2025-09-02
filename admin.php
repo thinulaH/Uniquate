@@ -174,7 +174,15 @@ $all_halls = $hall->getAllHalls();
 include_once 'includes/header.php';
 ?>
 
-<div class="container">
+<div class="admin-sidebar">
+    <a href="#add-hall">Add New Hall</a>
+    <a href="#manage-halls">Manage Halls</a>
+    <a href="#manage-bookings">Manage Bookings</a>
+    <a href="#create-admin">Create Admin</a>
+    <a href="#user-management">User Management</a>
+</div>
+
+<div class="container admin-content">
     <div style="margin: 2rem 0;">
         <h1>Admin Panel</h1>
         <p>Manage halls, bookings, and users</p>
@@ -210,7 +218,7 @@ include_once 'includes/header.php';
     
     
     <!-- Add/Edit Hall Form -->
-    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+    <div id="add-hall" class="admin-task-container" >
         <div style="display: flex; align-items: center; justify-content: flex-start; gap: 1rem;">
             <h3><?= isset($editHall) && $editHall ? 'Edit Hall' : 'Add New Hall' ?></h3>
         </div>
@@ -291,7 +299,7 @@ include_once 'includes/header.php';
     </div>
 
     <!-- Manage Halls -->
-     <div style= "background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+     <div id="manage-halls" class="admin-task-container" style="background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
         <h3> Manage Halls</h3>
         <br>
         <div style="overflow-x: auto;">
@@ -328,7 +336,7 @@ include_once 'includes/header.php';
     
     
     <!-- Manage Bookings -->
-    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+    <div id="manage-bookings" class="admin-task-container" >
         <h3>Manage Bookings</h3><br>
         
         <?php if (empty($all_bookings)): ?>
@@ -384,7 +392,7 @@ include_once 'includes/header.php';
     </div>
 
     <!-- Create an admin account -->
-    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+    <div id="create-admin" class="admin-task-container" >
         <div style="max-width: 100%; margin: auto;">
             <h3 style="margin-bottom: 1rem; text-align:left;">Create Admin Account</h3>
             <form method="POST" style="display: grid; gap: 1rem;">
@@ -420,7 +428,7 @@ include_once 'includes/header.php';
         </div>
     </div>
     <!-- User Management -->
-    <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+    <div id="user-management" class="admin-task-container" >
         <h3>User Management</h3><br>
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">

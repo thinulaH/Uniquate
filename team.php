@@ -38,7 +38,7 @@ include_once 'includes/header.php';
         }
         .member-card img {
             width: 100%;
-            border-radius: 50%;
+            border-radius: 15%;
             height: auto;
             max-width: 100%;
         }

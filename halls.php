@@ -50,7 +50,7 @@ include_once 'includes/header.php';
                     <option value="Auditorium">Auditorium</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Search</button>
+            <button type="submit" class="btn btn-primary btn-search">Search</button>
         </form>
     </div>
     
