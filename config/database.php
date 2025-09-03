@@ -4,7 +4,7 @@ class Database {
     private $host = "localhost";
     private $database_name = "hall_booking_system";
     private $username = "root";
-    private $password = "root";
+    private $password = "";
     public $conn;
 
     public function getConnection() {
