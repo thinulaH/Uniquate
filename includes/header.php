@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="images/favicon.png">
     <title>University Hall Booking System</title>
     <style>
 
@@ -29,24 +30,31 @@
         }
 
         body {
-            /* background: rgba(240, 236, 227, 0.8); */
-            background: linear-gradient(135deg, #fffcd7ff 0%, #8e7295ff 100%);
+            /* background: rgba(240, 236, 227, 0.8);  */
+            /* background: linear-gradient(135deg, #fffcd7ff 0%, #8e7295ff 100%); */
+            background: linear-gradient(135deg, #7765ceff 0%, #c6f2ffff 100%);
+
             font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         :root {
-            --cream: #F0ECE3;
-            --light-tan: #DFD3C3;
-            --tan: #C7B198;
-            --purple: #A68DAD;
+            
+            /* --cream: #F0ECE3;
+            --light-tan: #DFD3C3; */
+            --cream: #8fd9d9ff;
+            --light-tan: #dffffcff;
+            /* --tan: #C7B198;
+            --purple: #A68DAD; */
             --dark-gray: #2c2c2c;
-            --light-gray: #f8f9fa;
+            --tan: #c6f2ffff;
+            --purple: #8b7dcfff;
+            --light-gray: #c0e0ffff;
         }
 
         /* Removed duplicate body definition to ensure consistent gradient background for all pages */
 
         .navbar {
-            background: rgba(255, 255, 255, 0.43);
+            background: rgba(255, 255, 255, 0.82);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
@@ -123,7 +131,9 @@
         }
 
         .btn-primary:hover {
-            background: #9580a1;
+            /* background: #9580a1; */
+            background: #8276c8ff;
+
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 8px 20px rgba(166, 141, 173, 0.4);
         }
@@ -134,7 +144,7 @@
         }
 
         .btn-secondary:hover {
-            background: #b8a485;
+            background: #7ddee9ff;
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 8px 20px rgba(194, 197, 171, 0.4);
         }
@@ -175,19 +185,52 @@
 
         .hero p {
             font-size: 1.2rem;
-            color: #666;
+            color: #505050ff;
             margin-bottom: 2rem;
             max-width: 600px;
             margin-left: auto;
             margin-right: auto;
         }
 
+        .photo-slider {
+            width: 95%;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 100px;
+            display: flex;
+            gap: 1rem;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.26);
+            padding: 1rem;
+        }
+        .photo-slider .slide {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .photo-slider img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            border-radius: 10px;
+            transition: transform 0.4s ease;
+
+        }
+        .photo-slider img:hover {
+            transform: scale(1.3);
+            object-fit: cover;
+        }
+
         .search-box {
-            background: white;
+            background: rgba(255, 255, 255, 0.3);
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            max-width: auto;
+            max-width: 100%;
             margin: auto;
         }
 
@@ -455,7 +498,7 @@
             top: 100px; 
             margin-left: 10px;
             left: 0;
-            background-color: #5c475cba;
+            background-color: #3f306fba;
             padding-top: 20px;
             z-index: 10;
         }
@@ -469,7 +512,7 @@
         }
 
         .admin-sidebar a:hover {
-            background-color: #3d4f5cff;
+            background-color: #87aac4ff;
         }
 
         .admin-content{
@@ -485,7 +528,7 @@
             margin: 2rem 0;
         }
 
-        #add-hall,
+        #add-hall, #users, #halls, #bookings,
         #manage-halls,
         #manage-bookings,
         #create-admin,
@@ -504,6 +547,8 @@
             <div class="nav-links">
                 <?php if (isLoggedIn()): ?>
                     <?php if (isAdmin()): ?>
+                        <a href="admin.php">Dashboard</a>
+                        <a href="admin_reports.php">Reports</a>
                     <?php else: ?>
                         <a href="index.php">Home</a>
                         <a href="halls.php">Browse Halls</a>

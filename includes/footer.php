@@ -25,8 +25,8 @@
             
             <div>
                 <h4 style="margin-bottom: 1rem; color: white;">Contact Info</h4>
-                <p>📧 2023s20228@stu.cmb.ac.lk</p>
-                <p>📞 (+94) 70 669 2736 </p>
+                <p>📧 <a href="mailto:2023s20228@stu.cmb.ac.lk" style="color: #ccc; text-decoration: none;">2023s20228@stu.cmb.ac.lk</a></p>
+                <p>📞 <a href="tel:+94706692736" style="color: #ccc; text-decoration: none;">(+94) 70 669 2736</a></p>
                 <p>📍 University of Colombo, 94 Cumaratunga Munidasawa Mw, Colombo 00700</p>
             </div>
             

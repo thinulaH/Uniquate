@@ -74,7 +74,6 @@ include_once 'includes/header.php';
     </div>
 </div>
 </div>
-
 <div class="photo-slider">
     <div class="slide" ><img src="images/hall1.jpeg" alt="Hall 1"></div>
     <div class="slide"><img src="images/hall2.jpg" alt="Hall 2"></div>
@@ -83,34 +82,7 @@ include_once 'includes/header.php';
 </div>
 
 <style>
-.photo-slider {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto 2rem;
-    display: flex;
-    gap: 1rem;
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-.photo-slider .slide {
-    flex: 1;
-    overflow: hidden;
-    border-radius: 10px;
-}
-.photo-slider img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    border-radius: 10px;
-    transition: transform 0.4s ease;
-}
-.photo-slider img:hover {
-    transform: scale(1.3);
-    object-fit: cover;
-}
+
 </style>
 
 <!-- <div class="container">
