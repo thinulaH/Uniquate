@@ -54,7 +54,7 @@
         /* Removed duplicate body definition to ensure consistent gradient background for all pages */
 
         .navbar {
-            background: rgba(255, 255, 255, 0.43);
+            background: rgba(255, 255, 255, 0.82);
             backdrop-filter: blur(10px);
             padding: 1rem 0;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
@@ -185,7 +185,7 @@
 
         .hero p {
             font-size: 1.2rem;
-            color: #c0fcffff;
+            color: #505050ff;
             margin-bottom: 2rem;
             max-width: 600px;
             margin-left: auto;
@@ -528,7 +528,7 @@
             margin: 2rem 0;
         }
 
-        #add-hall,
+        #add-hall, #users, #halls, #bookings,
         #manage-halls,
         #manage-bookings,
         #create-admin,
@@ -547,6 +547,8 @@
             <div class="nav-links">
                 <?php if (isLoggedIn()): ?>
                     <?php if (isAdmin()): ?>
+                        <a href="admin.php">Dashboard</a>
+                        <a href="admin_reports.php">Reports</a>
                     <?php else: ?>
                         <a href="index.php">Home</a>
                         <a href="halls.php">Browse Halls</a>

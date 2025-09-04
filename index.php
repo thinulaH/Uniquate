@@ -74,7 +74,6 @@ include_once 'includes/header.php';
     </div>
 </div>
 </div>
-
 <div class="photo-slider">
     <div class="slide" ><img src="images/hall1.jpeg" alt="Hall 1"></div>
     <div class="slide"><img src="images/hall2.jpg" alt="Hall 2"></div>
