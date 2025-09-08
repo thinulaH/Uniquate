@@ -56,11 +56,11 @@ include_once 'includes/header.php';
             Don't have an account? <a href="register.php" style="color: var(--purple);">Sign up here</a>
         </p>
         
-        <div style="margin-top: 2rem; padding: 1rem; background: var(--light-gray); border-radius: 10px;">
+        <!--<div style="margin-top: 2rem; padding: 1rem; background: var(--light-gray); border-radius: 10px;">
             <h4>Default Test Account:</h4>
             <p><strong>Username:</strong> uoc</p>
             <p><strong>Password:</strong> uoc</p>
-        </div>
+        </div>-->
     </div>
 </div>
 

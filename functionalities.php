@@ -1,17 +1,16 @@
 <?php
-// help.php
+// functionalities.php
 include_once 'auth/session.php';
 include_once 'includes/header.php';
 ?>
 
-
-  <div class="container">
+<div class="container">
     <div style="margin: 2rem 0;">
-        <h1>Help & Support</h1>
+        <h1>Functionalities</h1>
         <p>Find answers to common questions and learn how to use the University Hall Booking System</p>
     </div>
     
-      <!--<div style="display: grid; gap: 2rem; margin: 2rem 0;">
+    <div style="display: grid; gap: 2rem; margin: 2rem 0;">
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
             <h3>🔍 How to Search for Halls</h3>
             <p>Use our search feature to find the perfect hall:</p>
@@ -80,65 +79,9 @@ include_once 'includes/header.php';
                 <li><strong>Office Hours:</strong> Monday-Friday, 8:00 AM - 5:00 PM</li>
                 <li><strong>Location:</strong> University of Colombo, 94 Cumaratunga Munidasawa Mw, Colombo 00700</li>
             </ul>
-        </div>-->
-
-        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-            <!-- FAQ -->
-            <section>
-                <h2>Frequently Asked Questions (FAQ)</h2><br>
-
-                <details>
-                <summary>What should I do if I forget my password?</summary>
-                <p><br>Please contact the system administrator to reset your password.</p>
-                </details>
-
-                <details>
-                <summary>How do I know if my booking was successful?</summary>
-                <p><br>After booking, you will see a confirmation message and can view it in your booking history.</p>
-                </details>
-
-                <details>
-                <summary>Can I cancel a booking after confirmation?</summary>
-                <p><br>Yes, you can cancel from the "My Bookings" page before the booking date.</p>
-                </details>
-
-                <details>
-                <summary>How can I check available halls and rooms before booking?</summary>
-                <p><br>You can use the "Search Availability" option on the homepage to view all free halls and rooms by date and time.</p>
-                </details>
-
-                <details>
-                <summary>What browsers work best for this system?</summary>
-                <p><br>The system works best on Google Chrome, Mozilla Firefox, and Microsoft Edge.</p>
-                </details>
-            </section>
-        </div>  
-        
-        
-        <!-- <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-            <h3>❓ Frequently Asked Questions</h3>
-            
-            <div style="margin: 1rem 0;">
-                <h4>How far in advance can I book a hall?</h4>
-                <p>You can book halls up to 6 months in advance. We recommend booking at least 2 weeks ahead for popular dates.</p>
-            </div>
-            
-            <div style="margin: 1rem 0;">
-                <h4>Can I cancel or modify my booking?</h4>
-                <p>Yes, contact the admin team to cancel or modify bookings. Cancellations made 48 hours in advance may receive a full refund.</p>
-            </div>
-            
-            <div style="margin: 1rem 0;">
-                <h4>What if I need technical support during my event?</h4>
-                <p>Technical support can be arranged for an additional fee. Contact us when making your booking to arrange this service.</p>
-            </div>
-            
-            <div style="margin: 1rem 0;">
-                <h4>Are there any restrictions on event types?</h4>
-                <p>Most academic and professional events are welcome. Commercial events may require special approval and different pricing.</p>
-            </div>
-        </div> -->
-    </div>
+        </div>
 </div>
-
-<?php include_once 'includes/footer.php'; ?>
+</div>
+    <?php
+     include_once 'includes/footer.php';
+    ?> 

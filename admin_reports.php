@@ -6,10 +6,7 @@ include_once 'classes/User.php';
 include_once 'classes/Hall.php';
 include_once 'classes/Booking.php';
 
-
-
 requireAdmin();
-
 
 $database = new Database();
 $db = $database->getConnection();
@@ -24,6 +21,11 @@ $all_bookings = $booking->getAllBookings();
 $all_users = $user->getAllUsers();
 $all_halls = $hall->getAllHalls();
 
+// counts
+$total_users = count($all_users);
+$total_halls = count($all_halls);
+$total_bookings = count($all_bookings);
+
 include_once 'includes/header.php';
 ?>
 <div class="admin-sidebar">
@@ -35,6 +37,22 @@ include_once 'includes/header.php';
 <div class="container admin-content"> 
     <h1>Admin Reports Page</h1>
     <p>Get insights about the system.</p>
+
+    <!-- Summary Counts -->
+    <div style="display: flex; gap: 2rem; margin: 2rem 0;">
+        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <h2><?= $total_users ?></h2>
+            <p>Total Users</p>
+        </div>
+        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <h2><?= $total_halls ?></h2>
+            <p>Total Halls</p>
+        </div>
+        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
+            <h2><?= $total_bookings ?></h2>
+            <p>Total Bookings</p>
+        </div>
+    </div>
 
     <?php if ($message): ?>
         <div class="alert alert-success"><?= htmlspecialchars($message) ?></div>
@@ -75,7 +93,7 @@ include_once 'includes/header.php';
             </div>
         </div>
         
-         <div id="halls" class="admin-task-container" style="background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
+        <div id="halls" class="admin-task-container" style="background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
             <h3> Halls</h3>
             <br>
             <div style="overflow-x: auto;">
@@ -97,7 +115,6 @@ include_once 'includes/header.php';
                                 <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['capacity']) ?></td>
                                 <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['type']) ?></td>
                                 <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">LKR <?= number_format($hall['price_per_hour'], 2) ?></td>
-                                
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -148,8 +165,6 @@ include_once 'includes/header.php';
         <?php endif; ?>
     </div>
 </div>
-
-
 
 <?php
 include_once 'includes/footer.php';
