@@ -1,3 +1,4 @@
+
 <?php
 // admin.php
 include_once 'config/database.php';
@@ -16,25 +17,94 @@ $booking = new Booking($db);
 
 $message = '';
 $error = '';
-// Handle create admin
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['createAdmin'])) {
+
+$editUser = null;
+
+// Handle user edit (load user for editing)
+if (isset($_GET['edit_user'])) {
+    $edit_user_id = $_GET['edit_user'];
+    // Get user data by id
+    foreach ($user->getAllUsers() as $u) {
+        if ($u['id'] == $edit_user_id) {
+            $editUser = $u;
+            break;
+        }
+    }
+    if (!$editUser) {
+        $error = "User not found.";
+    }
+}
+
+// Handle unified user form (add or edit)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_form_submit'])) {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    $role = $_POST['role'];
+    $password = isset($_POST['password']) ? $_POST['password'] : '';
+    $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
 
-    if ($password !== $confirm_password) {
-        $error = "Passwords do not match.";
-    } else {
-        $user->username = $username;
-        $user->email = $email;
-        $user->password = $password;
-        $user->role = 'admin';
-
-        if ($user->createAdmin()) {
-            $message = "Admin account created successfully.";
+    // Editing an existing user
+    if (isset($_POST['user_id']) && $_POST['user_id'] !== '') {
+        $user_id = $_POST['user_id'];
+        if ($password !== '' && $password !== $confirm_password) {
+            $error = "Passwords do not match.";
+            // Re-populate editUser for form
+            $editUser = [
+                'id' => $user_id,
+                'username' => $username,
+                'email' => $email,
+                'role' => $role,
+                'created_at' => $_POST['created_at'] ?? ''
+            ];
         } else {
-            $error = "Failed to create admin account.";
+            // Only update password if provided
+            $updateResult = $user->update($user_id, $username, $email, $password, $role);
+            if ($updateResult) {
+                $message = "User updated successfully.";
+                // Refresh user list after update
+                $all_users = $user->getAllUsers();
+                $editUser = null;
+            } else {
+                $error = "Failed to update user.";
+                // Re-populate editUser for form
+                $editUser = [
+                    'id' => $user_id,
+                    'username' => $username,
+                    'email' => $email,
+                    'role' => $role,
+                    'created_at' => $_POST['created_at'] ?? ''
+                ];
+            }
+        }
+    } else {
+        // Creating a new user
+        if ($password === '' || $confirm_password === '') {
+            $error = "Password fields are required for new users.";
+        } elseif ($password !== $confirm_password) {
+            $error = "Passwords do not match.";
+        } else {
+            $user->username = $username;
+            $user->email = $email;
+            $user->password = $password;
+            $user->role = $role;
+            // Check for unique username/email
+            $existingUsers = $user->getAllUsers();
+            $userExists = false;
+            foreach ($existingUsers as $u) {
+                if ($u['username'] === $username || $u['email'] === $email) {
+                    $userExists = true;
+                    break;
+                }
+            }
+            if ($userExists) {
+                $error = "User with this username or email already exists.";
+            } else {
+                if ($user->create()) {
+                    $message = "User created successfully.";
+                } else {
+                    $error = "Failed to create user.";
+                }
+            }
         }
     }
 }
@@ -195,7 +265,6 @@ include_once 'includes/header.php';
     <a href="#add-hall">Add New Hall</a>
     <a href="#manage-halls">Manage Halls</a>
     <a href="#manage-bookings">Manage Bookings</a>
-    <a href="#create-admin">Create Admin</a>
     <a href="#user-management">User Management</a>
 </div>
 
@@ -408,46 +477,74 @@ include_once 'includes/header.php';
         <?php endif; ?>
     </div>
 
-    <!-- Create an admin account -->
-    <div id="create-admin" class="admin-task-container" >
-        <div style="max-width: 100%; margin: auto;">
-            <h3 style="margin-bottom: 1rem; text-align:left;">Create Admin Account</h3>
-            <form method="POST" style="display: grid; gap: 1rem;">
+    <!-- Unified Add/Edit User Form -->
+    <div id="user-management" class="admin-task-container" >
+        <h3>User Management</h3><br>
+        <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 10px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05); max-width: 100%;">
+            <h4><?= $editUser ? 'Edit User' : 'Add New User' ?></h4>
+            <form method="POST" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <?php
+                    // Prepopulate form values
+                    $form_username = '';
+                    $form_email = '';
+                    $form_role = 'user';
+                    $form_user_id = '';
+                    $form_created_at = '';
+                    if ($editUser) {
+                        $form_username = htmlspecialchars($editUser['username']);
+                        $form_email = htmlspecialchars($editUser['email']);
+                        $form_role = $editUser['role'];
+                        $form_user_id = htmlspecialchars($editUser['id']);
+                        $form_created_at = htmlspecialchars($editUser['created_at']);
+                    } else {
+                        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_form_submit'])) {
+                            $form_username = htmlspecialchars($_POST['username'] ?? '');
+                            $form_email = htmlspecialchars($_POST['email'] ?? '');
+                            $form_role = $_POST['role'] ?? 'user';
+                        }
+                    }
+                ?>
+                <?php if ($editUser): ?>
+                    <input type="hidden" name="user_id" value="<?= $form_user_id ?>">
+                    <input type="hidden" name="created_at" value="<?= $form_created_at ?>">
+                <?php endif; ?>
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required 
-                        value="<?= isset($_POST['username']) ? htmlspecialchars($_POST['username']) : '' ?>" 
-                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                    <input type="text" id="username" name="username" required value="<?= $form_username ?>" style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" required 
-                        value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>" 
-                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                    <input type="email" id="email" name="email" required value="<?= $form_email ?>" style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required 
-                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                        <option value="user" <?= $form_role === 'user' ? 'selected' : '' ?>>User</option>
+                        <option value="admin" <?= $form_role === 'admin' ? 'selected' : '' ?>>Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password"><?= $editUser ? 'New Password <small>(leave blank to keep unchanged)</small>' : 'Password' ?></label>
+                    <input type="password" id="password" name="password" <?= $editUser ? '' : 'required' ?> style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
                 </div>
                 <div class="form-group">
                     <label for="confirm_password">Confirm Password</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required 
-                        style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
+                    <input type="password" id="confirm_password" name="confirm_password" <?= $editUser ? '' : 'required' ?> style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
                 </div>
-                
-                <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
-                    <button type="submit" name="createAdmin" 
-                            class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">
-                        Add Admin
-                    </button>
+                <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem;">
+                    <?php if ($editUser): ?>
+                        <a href="admin.php#user-management" class="btn btn-danger" style="width: 120px; font-size: 0.875rem;">Cancel</a>
+                        <button type="submit" name="user_form_submit" class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">Update User</button>
+                    <?php else: ?>
+                        <button type="submit" name="user_form_submit" class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">Add User</button>
+                    <?php endif; ?>
                 </div>
             </form>
         </div>
-    </div>
     <!-- User Management -->
     <div id="user-management" class="admin-task-container" >
         <h3>User Management</h3><br>
+        
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
                 <thead>
@@ -471,7 +568,7 @@ include_once 'includes/header.php';
                             </td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= date('M j, Y', strtotime($user_item['created_at'])) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
-                                <a href="admin.php?edit_user=<?= $user_item['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem;">Edit</a>
+                                <a href="admin.php?edit_user=<?= $user_item['id'] ?>#user-management" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem;">Edit</a>
                                 <a href="admin.php?delete_user=<?= $user_item['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0; font-size: 0.875rem;" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
                             </td>
                         </tr>
@@ -480,6 +577,7 @@ include_once 'includes/header.php';
             </table>
         </div>
     </div>
+</div>
 </div>
 
 <?php include_once 'includes/footer.php'; ?>

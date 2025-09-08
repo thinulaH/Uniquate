@@ -4,7 +4,15 @@ include_once 'auth/session.php';
 include_once 'includes/header.php';
 ?>
 
+<style >
+    .page-wrapper{
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
+</style>
+<div class="page-wrapper">
   <div class="container">
     <div style="margin: 2rem 0;">
         <h1>Help & Support</h1>

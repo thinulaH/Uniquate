@@ -54,7 +54,7 @@ include_once 'includes/header.php';
 
 <div class="container">
     <div style="margin: 2rem 0;">
-        <a href="halls.php" style="color: var(--purple); text-decoration: none;">← Back to Halls</a>
+        <a href="halls.php" style="color: var(--black); text-decoration: none;">← Back to Halls</a>
         <h1><br><?= htmlspecialchars($hall_data['name']) ?></h1>
     </div>
     
@@ -116,7 +116,8 @@ include_once 'includes/header.php';
                     
                     <div style="background: var(--light-gray); padding: 1rem; border-radius: 10px; margin: 1rem 0;">
                         <p><strong>Estimated Cost:</strong> <span id="total-cost">LKR 0.00</span></p>
-                        <p style="font-size: 0.9rem; color: #666;">Cost will be calculated based on duration</p>
+                        <p style="font-size: 0.9rem; color: #666;">Cost will be calculated based on duration</p><br>
+                        <p style="font-size: 0.9rem; color: #cd9999ff;">Please note: Payment must be made onsite. You cannot cancel a booking within two days of the booking date.</p>
                     </div>
                     
                     <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Booking Request</button>
