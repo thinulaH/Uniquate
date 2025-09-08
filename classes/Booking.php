@@ -94,5 +94,34 @@
             $stmt->bindParam(":id", $booking_id);
             return $stmt->execute();
         }
+        
+        /**
+         * Checks if a booking can be modified/cancelled (more than 2 days away from today)
+         * @param int $booking_id
+         * @return bool
+         */
+        public function canModifyBooking($booking_id) {
+            $query = "SELECT booking_date FROM " . $this->table_name . " WHERE id = :id LIMIT 1";
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindParam(":id", $booking_id);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row || empty($row['booking_date'])) {
+                return false;
+            }
+            $bookingDate = new DateTime($row['booking_date']);
+            $today = new DateTime();
+            $interval = $today->diff($bookingDate);
+            // bookingDate > today and at least 2 days difference
+            return ($bookingDate > $today) && ($interval->days > 2);
+        }
+
+        public function cancelBooking($booking_id) {
+            if (!$this->canModifyBooking($booking_id)) {
+                // Not allowed to cancel
+                return false;
+            }
+            return $this->updateStatus($booking_id, 'cancelled');
+        }
     }
 ?>

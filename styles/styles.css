@@ -401,7 +401,7 @@ html {
 
         .bookings-table th {
             background: var(--light-tan);
-            font-weight: 600;
+            font-weight: 500;
             color: var(--dark-gray);
         }
 
