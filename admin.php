@@ -39,6 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['createAdmin'])) {
     }
 }
 
+// Handle user deletion
+if (isset($_GET['delete_user'])) {
+    $user_id = $_GET['delete_user'];
+
+    // Use new User delete() method that returns ['success'=>bool, 'message'=>string]
+    $deleteResult = $user->delete($user_id);
+
+    if (isset($deleteResult['success']) && $deleteResult['success']) {
+        $message = $deleteResult['message'] ?? 'User deleted failed';
+        // Do not redirect, so alert shows
+    } else {
+        $error = $deleteResult['message'] ?? 'User deleted successfully';
+    }
+}
+
+
+
 // Handle hall deletion
 if (isset($_GET['delete_hall'])) {
     $hall_id = $_GET['delete_hall'];
@@ -418,6 +435,7 @@ include_once 'includes/header.php';
                     <input type="password" id="confirm_password" name="confirm_password" required 
                         style="padding: 0.75rem; border: 2px solid #e1e5e9; border-radius: 10px; font-size: 1rem; width: 100%;">
                 </div>
+                
                 <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
                     <button type="submit" name="createAdmin" 
                             class="btn btn-primary" style="width: 150px; font-size: 0.875rem;">
@@ -438,6 +456,7 @@ include_once 'includes/header.php';
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Email</th>
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Role</th>
                         <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Registered</th>
+                        <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -451,6 +470,10 @@ include_once 'includes/header.php';
                                 </span>
                             </td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= date('M j, Y', strtotime($user_item['created_at'])) ?></td>
+                            <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
+                                <a href="admin.php?edit_user=<?= $user_item['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem;">Edit</a>
+                                <a href="admin.php?delete_user=<?= $user_item['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0; font-size: 0.875rem;" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

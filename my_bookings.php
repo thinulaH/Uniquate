@@ -47,6 +47,7 @@ include_once 'includes/header.php';
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Booked On</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,6 +66,14 @@ include_once 'includes/header.php';
                                     </span>
                                 </td>
                                 <td><?= date('M j, Y', strtotime($booking_item['created_at'])) ?></td>
+                            </tr>
+                            <tr>
+                                <td colspan="7">
+                                    <div class="booking-actions">
+                                        <a href="edit_booking.php?id=<?= $booking_item['id'] ?>" class="btn">Edit</a>
+                                        <a href="cancel_booking.php?id=<?= $booking_item['id'] ?>" class="btn btn-danger">Cancel</a>
+                                    </div>
+                                </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

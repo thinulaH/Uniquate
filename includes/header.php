@@ -553,6 +553,8 @@
                         <a href="index.php">Home</a>
                         <a href="halls.php">Browse Halls</a>
                         <a href="my_bookings.php">My Bookings</a>
+                        <a href="functionalities.php">Functionalities</a>
+                        
                     <?php endif; ?>
                     <a href="logout.php" class="btn btn-secondary">
                         Logout (<?= htmlspecialchars($_SESSION['username']) ?>)
@@ -560,6 +562,7 @@
                 <?php else: ?>
                     <a href="index.php">Home</a>
                     <a href="halls.php">Browse Halls</a>
+                    <a href="functionalities.php">Functionalities</a>
                     <a href="login.php" class="btn btn-primary">Sign In</a>
                     <a href="register.php" class="btn btn-secondary">Sign Up</a>
                 <?php endif; ?>
