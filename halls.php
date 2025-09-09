@@ -1,15 +1,11 @@
-
 <?php
-// halls.php
+// halls.php (classes version)
 include_once 'config/database.php';
 include_once 'classes/Hall.php';
 include_once 'auth/session.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$hall = new Hall($db);
-
-$halls = $hall->getAllHalls();
+$conn = getConnection();
+$halls = getAllHalls($conn);
 
 include_once 'includes/header.php';
 ?>

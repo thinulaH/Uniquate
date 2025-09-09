@@ -1,167 +1,137 @@
 <?php
-    class Hall {
-        private $conn;
-        private $table_name = "halls";
+// === Hall Functions (procedural) ===
 
-        public $id;
-        public $name;
-        public $description;
-        public $capacity;
-        public $location;
-        public $price_per_hour;
-        public $image_url;
-        public $amenities;
-        public $created_at;
-        public $type;
+// Create a hall (with optional image upload)
+function createHall($conn, $name, $description, $capacity, $location, $price_per_hour, $amenities, $type, $imageFile = null) {
+    $image_url = null;
 
-        public function __construct($db) {
-            $this->conn = $db;
+    // Handle image upload if provided
+    if ($imageFile && $imageFile['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../uploads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
         }
+        $fileName = time() . "_" . basename($imageFile['name']);
+        $targetPath = $uploadDir . $fileName;
 
-        public function create() {
-            // Handle image upload if provided
-            if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $uploadDir = __DIR__ . '/../uploads/';
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                $fileName = time() . "_" . basename($_FILES['image']['name']);
-                $targetPath = $uploadDir . $fileName;
-
-                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                    // Save relative path for database
-                    $this->image_url = 'uploads/' . $fileName;
-                }
-            }
-
-            $query = "INSERT INTO " . $this->table_name . " 
-                    SET name=:name, description=:description, capacity=:capacity, 
-                        location=:location, price_per_hour=:price_per_hour, 
-                        image_url=:image_url, amenities=:amenities, type=:type";
-            
-            $stmt = $this->conn->prepare($query);
-            
-            $stmt->bindParam(":name", $this->name);
-            $stmt->bindParam(":description", $this->description);
-            $stmt->bindParam(":capacity", $this->capacity);
-            $stmt->bindParam(":location", $this->location);
-            $stmt->bindParam(":price_per_hour", $this->price_per_hour);
-            $stmt->bindParam(":image_url", $this->image_url);
-            $stmt->bindParam(":amenities", $this->amenities);
-            $stmt->bindParam(":type", $this->type);
-            
-            return $stmt->execute();
-        }
-
-        public function getAllHalls() {
-            $query = "SELECT * FROM " . $this->table_name . " ORDER BY name ASC";
-            $stmt = $this->conn->prepare($query);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
-
-        public function getHallById($id) {
-            $query = "SELECT * FROM " . $this->table_name . " WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-
-        public function delete($id) {
-            $query = "DELETE FROM " . $this->table_name . " WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(":id", $id);
-            try {
-                $result = $stmt->execute();
-                if ($result) {
-                    return [
-                        'success' => true,
-                        'message' => 'Hall deleted successfully.'
-                    ];
-                } else {
-                    return [
-                        'success' => false,
-                        'message' => 'Failed to delete hall.'
-                    ];
-                }
-            } catch (PDOException $e) {
-                // MySQL: 1451 (foreign key constraint fails), SQLite: 19 (constraint failed)
-                $errorCode = $e->getCode();
-                $errorMsg = $e->getMessage();
-                if (
-                    // MySQL foreign key error code
-                    $errorCode == 1451 ||
-                    // SQLite constraint error code
-                    $errorCode == 19 ||
-                    // Generic message check
-                    strpos(strtolower($errorMsg), 'foreign key constraint') !== false
-                ) {
-                    return [
-                        'success' => false,
-                        'message' => 'Cannot delete hall: there are existing bookings for this hall.'
-                    ];
-                }
-                // Other PDOException
-                return [
-                    'success' => false,
-                    'message' => 'An error occurred while deleting the hall: ' . $e->getMessage()
-                ];
-            }
-        }
-
-        public function update($id) {
-            $query = "UPDATE " . $this->table_name . " SET
-                        name = :name,
-                        description = :description,
-                        capacity = :capacity,
-                        type = :type,
-                        location = :location,
-                        price_per_hour = :price_per_hour,
-                        image_url = :image_url,
-                        amenities = :amenities
-                    WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $this->name);
-            $stmt->bindParam(':description', $this->description);
-            $stmt->bindParam(':capacity', $this->capacity);
-            $stmt->bindParam(':type', $this->type);
-            $stmt->bindParam(':location', $this->location);
-            $stmt->bindParam(':price_per_hour', $this->price_per_hour);
-            $stmt->bindParam(':image_url', $this->image_url);
-            $stmt->bindParam(':amenities', $this->amenities);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        }
-
-        public function searchHalls($search_term, $capacity = null, $type = null) {
-            $query = "SELECT * FROM " . $this->table_name . " WHERE 
-                    (name LIKE :search OR location LIKE :search OR description LIKE :search)";
-            
-            if ($capacity) {
-                $query .= " AND capacity >= :capacity";
-            }
-            
-            if (!empty($type)) {
-                $query .= " AND type = :type";
-            }
-            
-            $query .= " ORDER BY name ASC";
-            
-            $stmt = $this->conn->prepare($query);
-            $search_param = "%" . $search_term . "%";
-            $stmt->bindParam(":search", $search_param);
-            
-            if ($capacity) {
-                $stmt->bindParam(":capacity", $capacity);
-            }
-            
-            if (!empty($type)) {
-                $stmt->bindParam(":type", $type);
-            }
-            
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (move_uploaded_file($imageFile['tmp_name'], $targetPath)) {
+            $image_url = 'uploads/' . $fileName;
         }
     }
+
+    $query = "INSERT INTO halls 
+              (name, description, capacity, location, price_per_hour, image_url, amenities, type)
+              VALUES (:name, :description, :capacity, :location, :price_per_hour, :image_url, :amenities, :type)";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':capacity', $capacity);
+    $stmt->bindParam(':location', $location);
+    $stmt->bindParam(':price_per_hour', $price_per_hour);
+    $stmt->bindParam(':image_url', $image_url);
+    $stmt->bindParam(':amenities', $amenities);
+    $stmt->bindParam(':type', $type);
+
+    return $stmt->execute();
+}
+
+// Get all halls
+function getAllHalls($conn) {
+    $query = "SELECT * FROM halls ORDER BY name ASC";
+    $stmt = $conn->prepare($query);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+// Get hall by ID
+function getHallById($conn, $id) {
+    $query = "SELECT * FROM halls WHERE id = :id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Delete hall by ID (with foreign key error handling)
+function deleteHall($conn, $id) {
+    $query = "DELETE FROM halls WHERE id = :id";
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':id', $id);
+
+    try {
+        $result = $stmt->execute();
+        if ($result) {
+            return ['success' => true, 'message' => 'Hall deleted successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'Failed to delete hall.'];
+        }
+    } catch (PDOException $e) {
+        $errorCode = $e->getCode();
+        $errorMsg = $e->getMessage();
+
+        if ($errorCode == 1451 || $errorCode == 19 || strpos(strtolower($errorMsg), 'foreign key constraint') !== false) {
+            return ['success' => false, 'message' => 'Cannot delete hall: there are existing bookings for this hall.'];
+        }
+
+        return ['success' => false, 'message' => 'An error occurred while deleting the hall: ' . $e->getMessage()];
+    }
+}
+
+// Update hall
+function updateHall($conn, $id, $name, $description, $capacity, $type, $location, $price_per_hour, $amenities, $image_url = null) {
+    $query = "UPDATE halls SET
+                name = :name,
+                description = :description,
+                capacity = :capacity,
+                type = :type,
+                location = :location,
+                price_per_hour = :price_per_hour,
+                image_url = :image_url,
+                amenities = :amenities
+              WHERE id = :id";
+
+    $stmt = $conn->prepare($query);
+    $stmt->bindParam(':name', $name);
+    $stmt->bindParam(':description', $description);
+    $stmt->bindParam(':capacity', $capacity);
+    $stmt->bindParam(':type', $type);
+    $stmt->bindParam(':location', $location);
+    $stmt->bindParam(':price_per_hour', $price_per_hour);
+    $stmt->bindParam(':image_url', $image_url);
+    $stmt->bindParam(':amenities', $amenities);
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+    return $stmt->execute();
+}
+
+// Search halls with optional filters
+function searchHalls($conn, $search_term, $capacity = null, $type = null) {
+    $query = "SELECT * FROM halls WHERE (name LIKE :search OR location LIKE :search OR description LIKE :search)";
+
+    if ($capacity) {
+        $query .= " AND capacity >= :capacity";
+    }
+
+    if (!empty($type)) {
+        $query .= " AND type = :type";
+    }
+
+    $query .= " ORDER BY name ASC";
+
+    $stmt = $conn->prepare($query);
+    $search_param = "%" . $search_term . "%";
+    $stmt->bindParam(':search', $search_param);
+
+    if ($capacity) {
+        $stmt->bindParam(':capacity', $capacity);
+    }
+
+    if (!empty($type)) {
+        $stmt->bindParam(':type', $type);
+    }
+
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 ?>

@@ -1,23 +1,44 @@
 <?php
 // search.php
 include_once 'config/database.php';
-include_once 'classes/Hall.php';
 include_once 'auth/session.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$hall = new Hall($db);
+// Get database connection using procedural function
+$db = getConnection();
 
 $search_term = $_GET['search'] ?? '';
 $capacity = $_GET['capacity'] ?? '';
 $type = $_GET['type'] ?? '';
 $date = $_GET['date'] ?? '';
 
+// Fetch halls based on filters
 $halls = [];
-if ($search_term || $capacity || $type) {
-    $halls = $hall->searchHalls($search_term, $capacity, $type);
-} else {
-    $halls = $hall->getAllHalls();
+try {
+    $query = "SELECT * FROM halls WHERE 1=1";
+    $params = [];
+
+    if ($search_term) {
+        $query .= " AND (name LIKE :search OR location LIKE :search OR description LIKE :search)";
+        $params[':search'] = '%' . $search_term . '%';
+    }
+
+    if ($capacity) {
+        $query .= " AND capacity >= :capacity";
+        $params[':capacity'] = $capacity;
+    }
+
+    if ($type) {
+        $query .= " AND type = :type";
+        $params[':type'] = $type;
+    }
+
+    $query .= " ORDER BY id ASC";
+
+    $stmt = $db->prepare($query);
+    $stmt->execute($params);
+    $halls = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $halls = [];
 }
 
 include_once 'includes/header.php';
@@ -78,7 +99,7 @@ include_once 'includes/header.php';
             <?php foreach ($halls as $hall_item): ?>
                 <div class="hall-card">
                     <div class="hall-image">
-                        <?php if ($hall_item['image_url']): ?>
+                        <?php if (!empty($hall_item['image_url'])): ?>
                             <img src="<?= htmlspecialchars($hall_item['image_url']) ?>" alt="<?= htmlspecialchars($hall_item['name']) ?>" style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
                             🏛️ <?= htmlspecialchars($hall_item['name']) ?>

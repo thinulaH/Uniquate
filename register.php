@@ -1,8 +1,6 @@
 <?php
-
 // register.php
 include_once 'config/database.php';
-include_once 'classes/User.php';
 include_once 'auth/session.php';
 
 if (isLoggedIn()) {
@@ -14,21 +12,39 @@ $message = '';
 $error = '';
 
 if ($_POST) {
-    $database = new Database();
-    $db = $database->getConnection();
-    $user = new User($db);
+    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
     
-    $user->username = $_POST['username'];
-    $user->password = $_POST['password'];
-    $user->email = $_POST['email'];
-    $user->role = 'user';
-    
-    if ($_POST['password'] !== $_POST['confirm_password']) {
+    if ($password !== $confirm_password) {
         $error = 'Passwords do not match';
-    } elseif ($user->create()) {
-        $message = 'Registration successful! You can now login.';
     } else {
-        $error = 'Registration failed. Username or email might already exist.';
+        // Get database connection using procedural function
+        $db = getConnection();
+        
+        // Check if username or email exists
+        $stmt = $db->prepare("SELECT id FROM users WHERE username = :username OR email = :email");
+        $stmt->bindParam(':username', $username);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() > 0) {
+            $error = 'Username or email already exists';
+        } else {
+            // Insert new user
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $insert = $db->prepare("INSERT INTO users (username, password, email, role, created_at) VALUES (:username, :password, :email, 'user', NOW())");
+            $insert->bindParam(':username', $username);
+            $insert->bindParam(':password', $hashedPassword);
+            $insert->bindParam(':email', $email);
+            
+            if ($insert->execute()) {
+                $message = 'Registration successful! You can now login.';
+            } else {
+                $error = 'Registration failed. Please try again.';
+            }
+        }
     }
 }
 
@@ -76,5 +92,8 @@ include_once 'includes/header.php';
         </p>
     </div>
 </div>
+
+
+<div><br><br><br><br><div>
 
 <?php include_once 'includes/footer.php'; ?>

@@ -66,13 +66,22 @@ include_once 'includes/header.php';
             <h3>Thinula Harischandra</h3>
             <p class="role">Team Leader & Developer</p>
             <p>S17478</p>
+            
+            <a href="http://www.linkedin.com/in/thinula-harischandra" target="_blank">
+                <img src="images\team\linkedin_logo.jpg" alt="LinkedIn" style="width:60px; height:60px; border-radius:8px;">
+            </a>
+
         </div>
 
         <div class="member-card">
-            <img src="images/team/person2.svg" alt="Sasmika Gunasekara">
-            <h3>Sasmika Gunasekara</h3>
+            <img src="images\team\sasmika.jpg" alt="Sasmika Gunasekara">
+            <h3>Sasmika Gunawardhana</h3>
             <p class="role">Developer</p>
             <p>S17474</p>
+            <a href="https://www.linkedin.com/in/sasmika-deshan-64a363311" target="_blank">
+                <img src="images\team\linkedin_logo.jpg" alt="LinkedIn" style="width:60px; height:60px; border-radius:8px;">
+            </a>
+            
         </div>
 
         <div class="member-card">
@@ -80,6 +89,10 @@ include_once 'includes/header.php';
             <h3>Rasini Hansika</h3>
             <p class="role">Developer</p>
             <p>S17476</p>
+            <a href="https://www.facebook.com/profile.php?id=100090503982035" target="_blank">
+                <img src="images/team/fb_logo.svg" alt="Facebook" style="width:40px; height:40px; border-radius:8px;">
+            </a>
+            
         </div>
 
         <div class="member-card">
@@ -87,6 +100,10 @@ include_once 'includes/header.php';
             <h3>Devindi Hansani</h3>
             <p class="role">Developer</p>
             <p>S17475</p>
+            <a href="https://www.linkedin.com/in/hansani-senarath-772191383" target="_blank">
+                <img src="images\team\linkedin_logo.jpg" alt="LinkedIn" style="width:60px; height:60px; border-radius:8px;">
+            </a>
+            
         </div>
 
         <div class="member-card">
@@ -94,6 +111,10 @@ include_once 'includes/header.php';
             <h3>Nilakshi Gunasena</h3>
             <p class="role">Developer</p>
             <p>S17473</p>
+            <a href="https://www.facebook.com/share/19b5r5UMdf/" target="_blank">
+                <img src="images/team/fb_logo.svg" alt="Facebook" style="width:40px; height:40px; border-radius:8px;">
+            </a>
+            
         </div>
 
     </div>

@@ -30,11 +30,11 @@ html {
             /* --cream: #F0ECE3;
             --light-tan: #DFD3C3; */
             --cream: #8fd9d9ff;
-            --light-tan: #dffffcff;
+            --light-tan: rgb(129, 176, 193);
             /* --tan: #C7B198;
             --purple: #A68DAD; */
             --dark-gray: #2c2c2c;
-            --tan: #c6f2ffff;
+            --tan: rgb(122, 173, 236);
             --purple: #8b7dcfff;
             --light-gray: #c0e0ffff;
         }
@@ -57,9 +57,9 @@ html {
             max-width: 90%;
             margin: 0 auto;
             display: flex;
-            justify-content: space-between; /* keeps logo left, nav-links right */
+            justify-content: space-between; 
             align-items: center;
-            padding: 0; /* remove left/right padding */
+            padding: 0; 
         }
 
         .logo {
@@ -67,8 +67,8 @@ html {
             font-weight: bold;
             color: var(--purple);
             text-decoration: none;
-            margin: 0; /* remove any margin */
-            padding: 0; /* remove any padding */
+            margin: 0; 
+            padding: 0; 
         }
 
         .logo img {
@@ -432,11 +432,11 @@ html {
             color: white;
             text-align: center;
             padding: 2rem 0;
-            position: relative;   /* make footer fixed */
-            bottom: 0;         /* stick to bottom */
+            position: relative;  
+            bottom: 0;         
             left: 0;
-            width: 100%;       /* span full width */
-            z-index: 20;       /* higher than sidebar (sidebar z-index: 10) */
+            width: 100%;     
+            z-index: 20;     
         }
 
         @media (max-width: 100%) {

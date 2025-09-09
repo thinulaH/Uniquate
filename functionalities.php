@@ -7,12 +7,12 @@ include_once 'includes/header.php';
 <div class="container">
     <div style="margin: 2rem 0;">
         <h1>Functionalities</h1>
-        <p>Find answers to common questions and learn how to use the University Hall Booking System</p>
+        <p>Discover functionalities available in Uniquate</p>
     </div>
     
     <div style="display: grid; gap: 2rem; margin: 2rem 0;">
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
-            <h3>🔍 How to Search for Halls</h3>
+            <h3>🔍 Search for Halls</h3>
             <p>Use our search feature to find the perfect hall:</p>
             <ul style="margin: 1rem 0; padding-left: 2rem;">
                 <li>Enter hall name, location, or keywords in the search box</li>

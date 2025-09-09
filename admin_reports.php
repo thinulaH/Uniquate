@@ -1,5 +1,5 @@
 <?php
-// Admin Reports Page
+// Admin Reports Page (classes version)
 include_once 'config/database.php';
 include_once 'auth/session.php';
 include_once 'classes/User.php';
@@ -8,52 +8,31 @@ include_once 'classes/Booking.php';
 
 requireAdmin();
 
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-$hall = new Hall($db);
-$booking = new Booking($db);
+// Get database connection using classes function
+$conn = getConnection();
 
 $message = "";
 $error = "";
 
-$all_bookings = $booking->getAllBookings();
-$all_users = $user->getAllUsers();
-$all_halls = $hall->getAllHalls();
-
-// counts
-$total_users = count($all_users);
-$total_halls = count($all_halls);
-$total_bookings = count($all_bookings);
+// Fetch data using classes functions
+$all_bookings = getAllBookings($conn);
+$all_users = getAllUsers($conn);
+$all_halls = getAllHalls($conn);
 
 include_once 'includes/header.php';
 ?>
+
 <div class="admin-sidebar">
+    <a href="#">Quick Insights</a> 
     <a href="#users">User Reports</a>
     <a href="#halls">Hall Reports</a>
     <a href="#bookings">Booking Reports</a>
-    <a href="#">System Logs</a> 
 </div>
+
 <div class="container admin-content"> 
     <h1>Admin Reports Page</h1>
     <p>Get insights about the system.</p>
-
-    <!-- Summary Counts -->
-    <div style="display: flex; gap: 2rem; margin: 2rem 0;">
-        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-            <h2><?= $total_users ?></h2>
-            <p>Total Users</p>
-        </div>
-        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-            <h2><?= $total_halls ?></h2>
-            <p>Total Halls</p>
-        </div>
-        <div style="flex:1; background:#f7f7f7; padding:1.5rem; border-radius:10px; text-align:center; box-shadow:0 4px 15px rgba(0,0,0,0.1);">
-            <h2><?= $total_bookings ?></h2>
-            <p>Total Bookings</p>
-        </div>
-    </div>
-
+    
     <?php if ($message): ?>
         <div class="alert alert-success"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
@@ -61,9 +40,49 @@ include_once 'includes/header.php';
     <?php if ($error): ?>
         <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
+    
+    <!-- Quick Stats -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 2rem 0;">
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
+            <h1 style="color: var(--purple);"><?= count($all_halls) ?></h1>
+            <p>Total Halls</p>
+        </div>
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
+            <h1 style="color: var(--tan);"><?= count($all_bookings) ?></h1>
+            <p>Total Bookings</p>
+        </div>
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
+            <h1 style="color: var(--purple);"><?= count($all_users) ?></h1>
+            <p>Registered Users</p>
+        </div>
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
+            <h1 style="color: var(--tan);"><?= count(array_filter($all_bookings, function($b) { return $b['status'] === 'pending'; })) ?></h1>
+            <p>Pending Requests</p>
+        </div>
+        <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); text-align: center;">
+            <h3 style="color: var(--purple);">
+                <?php
+                // Sum confirmed bookings in the current month
+                $monthly_income = 0.0;
+                $currentYm = date('Y-m');
+                foreach ($all_bookings as $b) {
+                    if (
+                        isset($b['booking_date'], $b['status'], $b['total_amount']) &&
+                        date('Y-m', strtotime($b['booking_date'])) === $currentYm &&
+                        $b['status'] === 'confirmed'
+                    ) {
+                        $monthly_income += (float)$b['total_amount'];
+                    }
+                }
+                echo 'LKR ' . number_format($monthly_income, 2);
+                ?>
+            </h3>
+            <p>Monthly Income</p>
+        </div>
+    </div>
 
     <div class="report-section">
-        <div id="users" class="admin-task-container" >
+        <div id="users" class="admin-task-container">
             <h3>Users</h3><br>
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
@@ -94,10 +113,10 @@ include_once 'includes/header.php';
         </div>
         
         <div id="halls" class="admin-task-container" style="background: white; padding:2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); margin: 2rem 0;">
-            <h3> Halls</h3>
+            <h3>Halls</h3>
             <br>
             <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; ">
+                <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
                     <thead>
                         <tr style="background: var(--light-tan);">
                             <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e1e5e9;">Hall Name</th>
@@ -122,7 +141,8 @@ include_once 'includes/header.php';
             </div>
         </div>
     </div>
-    <div id="bookings" class="admin-task-container" >
+
+    <div id="bookings" class="admin-task-container">
         <h3>Bookings</h3><br>
         
         <?php if (empty($all_bookings)): ?>
@@ -166,6 +186,4 @@ include_once 'includes/header.php';
     </div>
 </div>
 
-<?php
-include_once 'includes/footer.php';
-?>
+<?php include_once 'includes/footer.php'; ?>

@@ -15,7 +15,7 @@
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                     <a href="index.php" style="color: #ccc; text-decoration: none;">Home</a>
                     <a href="halls.php" style="color: #ccc; text-decoration: none;">Browse Halls</a>
-                    <a href="help.php" style="color: #ccc; text-decoration: none;">Help & Support</a>
+                    <a href="<?= (isLoggedIn() && $_SESSION['role'] === 'admin') ? 'admin_help.php' : 'help.php' ?>" style="color: #ccc; text-decoration: none;">Help & Support</a>
                     <?php if (isLoggedIn()): ?>
                         <a href="my_bookings.php" style="color: #ccc; text-decoration: none;">My Bookings</a>
                     <?php endif; ?>

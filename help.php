@@ -19,14 +19,14 @@ include_once 'includes/header.php';
         <p>Find answers to common questions and learn how to use the University Hall Booking System</p>
     </div>
     
-      <!--<div style="display: grid; gap: 2rem; margin: 2rem 0;">
+      <div style="display: grid; gap: 2rem; margin: 2rem 0;">
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
             <h3>🔍 How to Search for Halls</h3>
             <p>Use our search feature to find the perfect hall:</p>
             <ul style="margin: 1rem 0; padding-left: 2rem;">
                 <li>Enter hall name, location, or keywords in the search box</li>
-                <li>Filter by minimum capacity to find halls that fit your group size</li>
-                <li>Select a date to check availability</li>
+                <li>Filter by minimum capacity to find halls that fit your group size and Select a date to check availability</li>
+                
                 <li>Browse all available halls on the "Browse Halls" page</li>
             </ul>
         </div>
@@ -88,7 +88,7 @@ include_once 'includes/header.php';
                 <li><strong>Office Hours:</strong> Monday-Friday, 8:00 AM - 5:00 PM</li>
                 <li><strong>Location:</strong> University of Colombo, 94 Cumaratunga Munidasawa Mw, Colombo 00700</li>
             </ul>
-        </div>-->
+        </div>
 
         <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
             <!-- FAQ -->
@@ -145,8 +145,9 @@ include_once 'includes/header.php';
                 <h4>Are there any restrictions on event types?</h4>
                 <p>Most academic and professional events are welcome. Commercial events may require special approval and different pricing.</p>
             </div>
-        </div> -->
-    </div>
+        </div>
+    </div> -->
+</div>
 </div>
 
 <?php include_once 'includes/footer.php'; ?>

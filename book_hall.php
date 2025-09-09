@@ -1,6 +1,6 @@
-
 <?php
-// book_hall.php
+// book_hall.php (classes version)
+
 include_once 'config/database.php';
 include_once 'classes/Hall.php';
 include_once 'classes/Booking.php';
@@ -8,17 +8,15 @@ include_once 'auth/session.php';
 
 requireLogin();
 
-$database = new Database();
-$db = $database->getConnection();
-$hall = new Hall($db);
-$booking = new Booking($db);
+$conn = getConnection();
 
+// Validate hall id
 if (!isset($_GET['id'])) {
     header('Location: halls.php');
     exit();
 }
 
-$hall_data = $hall->getHallById($_GET['id']);
+$hall_data = getHallById($conn, $_GET['id']);
 if (!$hall_data) {
     header('Location: halls.php');
     exit();
@@ -27,22 +25,25 @@ if (!$hall_data) {
 $message = '';
 $error = '';
 
-if ($_POST) {
-    $booking->user_id = $_SESSION['user_id'];
-    $booking->hall_id = $hall_data['id'];
-    $booking->booking_date = $_POST['booking_date'];
-    $booking->start_time = $_POST['start_time'];
-    $booking->end_time = $_POST['end_time'];
-    $booking->purpose = $_POST['purpose'];
-    $booking->status = 'pending';
-    
+// Handle booking submission
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_id = $_SESSION['user_id'];
+    $hall_id = $hall_data['id'];
+    $booking_date = $_POST['booking_date'];
+    $start_time = $_POST['start_time'];
+    $end_time = $_POST['end_time'];
+    $purpose = $_POST['purpose'];
+    $status = 'pending';
+
     // Calculate total amount
-    $start = new DateTime($_POST['start_time']);
-    $end = new DateTime($_POST['end_time']);
-    $hours = $end->diff($start)->h + ($end->diff($start)->i / 60);
-    $booking->total_amount = $hours * $hall_data['price_per_hour'];
-    
-    if ($booking->create()) {
+    $start = new DateTime($start_time);
+    $end = new DateTime($end_time);
+    $interval = $end->diff($start);
+    $hours = $interval->h + ($interval->i / 60);
+
+    $total_amount = $hours * $hall_data['price_per_hour'];
+
+    if (createBooking($conn, $user_id, $hall_id, $booking_date, $start_time, $end_time, $purpose, $total_amount, $status)) {
         $message = 'Booking request submitted successfully! Your booking is pending approval.';
     } else {
         $error = 'Booking failed. The hall might be unavailable for the selected time.';
@@ -70,12 +71,12 @@ include_once 'includes/header.php';
             
             <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);">
                 <h3>Hall Details</h3>
-                <p style="margin: 1rem 0;"><strong>Location:</strong> <?= htmlspecialchars($hall_data['location']) ?></p>
-                <p style="margin: 1rem 0;"><strong>Capacity:</strong> <?= $hall_data['capacity'] ?> people</p>
-                <p style="margin: 1rem 0;"><strong>Type:</strong> <?= htmlspecialchars($hall_data['type']) ?></p>
-                <p style="margin: 1rem 0;"><strong>Price:</strong> LKR<?= number_format($hall_data['price_per_hour'], 2) ?>/hour</p>
-                <p style="margin: 1rem 0;"><strong>Amenities:</strong> <?= htmlspecialchars($hall_data['amenities']) ?></p>
-                <p style="margin: 1rem 0;"><strong>Description:</strong> <?= htmlspecialchars($hall_data['description']) ?></p>
+                <p><strong>Location:</strong> <?= htmlspecialchars($hall_data['location']) ?></p>
+                <p><strong>Capacity:</strong> <?= $hall_data['capacity'] ?> people</p>
+                <p><strong>Type:</strong> <?= htmlspecialchars($hall_data['type']) ?></p>
+                <p><strong>Price:</strong> LKR<?= number_format($hall_data['price_per_hour'], 2) ?>/hour</p>
+                <p><strong>Amenities:</strong> <?= htmlspecialchars($hall_data['amenities']) ?></p>
+                <p><strong>Description:</strong> <?= htmlspecialchars($hall_data['description']) ?></p>
             </div>
         </div>
         
