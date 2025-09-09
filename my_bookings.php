@@ -6,7 +6,6 @@ include_once 'auth/session.php';
 
 requireLogin();
 
-// Get database connection using classes function
 $db = getConnection();
 
 // Get current user's bookings

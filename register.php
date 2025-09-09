@@ -20,7 +20,6 @@ if ($_POST) {
     if ($password !== $confirm_password) {
         $error = 'Passwords do not match';
     } else {
-        // Get database connection using procedural function
         $db = getConnection();
         
         // Check if username or email exists

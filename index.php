@@ -1,6 +1,6 @@
 <?php
 // index.php (Home Page)
-include_once 'config/database.php';  // This should contain your getConnection() function
+include_once 'config/database.php'; 
 include_once 'auth/session.php';
 
 // Redirect admins before output starts
@@ -9,10 +9,8 @@ if (isLoggedIn() && isAdmin()) {
     exit();
 }
 
-// DB connection using classes approach
 $db = getConnection();
 
-// Fetch featured halls (limit 6)
 try {
     $stmt = $db->prepare("SELECT * FROM halls ORDER BY id ASC LIMIT 6");
     $stmt->execute();

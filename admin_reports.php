@@ -1,5 +1,5 @@
 <?php
-// Admin Reports Page (classes version)
+
 include_once 'config/database.php';
 include_once 'auth/session.php';
 include_once 'classes/User.php';
@@ -8,13 +8,11 @@ include_once 'classes/Booking.php';
 
 requireAdmin();
 
-// Get database connection using classes function
 $conn = getConnection();
 
 $message = "";
 $error = "";
 
-// Fetch data using classes functions
 $all_bookings = getAllBookings($conn);
 $all_users = getAllUsers($conn);
 $all_halls = getAllHalls($conn);

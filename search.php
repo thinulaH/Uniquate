@@ -3,7 +3,6 @@
 include_once 'config/database.php';
 include_once 'auth/session.php';
 
-// Get database connection using procedural function
 $db = getConnection();
 
 $search_term = $_GET['search'] ?? '';

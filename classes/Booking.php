@@ -1,5 +1,4 @@
 <?php
-// === Booking Functions (procedural) ===
 
 // Create a booking
 function createBooking($conn, $user_id, $hall_id, $booking_date, $start_time, $end_time, $purpose, $total_amount, $status) {

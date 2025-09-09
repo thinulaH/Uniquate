@@ -1,5 +1,4 @@
 <?php
-// === User Functions (procedural) ===
 
 // Create a user
 function createUser($conn, $username, $password, $email, $role) {

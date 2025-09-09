@@ -1,5 +1,5 @@
 <?php
-// book_hall.php (classes version)
+// book_hall.php 
 
 include_once 'config/database.php';
 include_once 'classes/Hall.php';

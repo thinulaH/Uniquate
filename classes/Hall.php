@@ -1,5 +1,4 @@
 <?php
-// === Hall Functions (procedural) ===
 
 // Create a hall (with optional image upload)
 function createHall($conn, $name, $description, $capacity, $location, $price_per_hour, $amenities, $type, $imageFile = null) {

@@ -1,5 +1,5 @@
 <?php
-// === Database Connection (procedural) ===
+
 function getConnection() {
     $host = "localhost";
     $database_name = "hall_booking_system";
