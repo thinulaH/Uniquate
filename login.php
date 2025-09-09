@@ -1,7 +1,6 @@
 <?php
 // login.php
 include_once 'config/database.php';
-include_once 'classes/User.php';
 include_once 'auth/session.php';
 
 if (isLoggedIn()) {
@@ -12,28 +11,43 @@ if (isLoggedIn()) {
 $error = '';
 
 if ($_POST) {
-    $database = new Database();
-    $db = $database->getConnection();
-    $user = new User($db);
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
     
-    if ($user->login($_POST['username'], $_POST['password'])) {
-        $_SESSION['user_id'] = $user->id;
-        $_SESSION['username'] = $user->username;
-        $_SESSION['role'] = $user->role;
-        header('Location: index.php');
-        exit();
-    } else {
-        $error = 'Invalid username or password';
+    // Get database connection using procedural function
+    $db = getConnection();
+    
+    try {
+        $stmt = $db->prepare("SELECT id, username, password, role FROM users WHERE username = :username LIMIT 1");
+        $stmt->bindParam(':username', $username);
+        $stmt->execute();
+        
+        if ($stmt->rowCount() > 0) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (password_verify($password, $row['password'])) {
+                $_SESSION['user_id'] = $row['id'];
+                $_SESSION['username'] = $row['username'];
+                $_SESSION['role'] = $row['role'];
+                header('Location: index.php');
+                exit();
+            } else {
+                $error = 'Invalid username or password';
+            }
+        } else {
+            $error = 'Invalid username or password';
+        }
+    } catch (PDOException $e) {
+        $error = 'Database error: ' . $e->getMessage();
     }
 }
 
 include_once 'includes/header.php';
 ?>
 
+
 <div class="container">
     <div class="form-container">
         <h2>Sign In to Your Account</h2>
-        
         <?php if ($error): ?>
             <div class="alert alert-error"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
@@ -55,13 +69,9 @@ include_once 'includes/header.php';
         <p style="text-align: center; margin-top: 1rem;">
             Don't have an account? <a href="register.php" style="color: var(--purple);">Sign up here</a>
         </p>
-        
-        <!--<div style="margin-top: 2rem; padding: 1rem; background: var(--light-gray); border-radius: 10px;">
-            <h4>Default Test Account:</h4>
-            <p><strong>Username:</strong> uoc</p>
-            <p><strong>Password:</strong> uoc</p>
-        </div>-->
     </div>
 </div>
 
+
+<div><br><br><br><br><br><br><br><br><div>
 <?php include_once 'includes/footer.php'; ?>

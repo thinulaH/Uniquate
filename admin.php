@@ -1,94 +1,58 @@
-
 <?php
-// admin.php
+
 include_once 'config/database.php';
+include_once 'auth/session.php';
 include_once 'classes/User.php';
 include_once 'classes/Hall.php';
 include_once 'classes/Booking.php';
-include_once 'auth/session.php';
 
 requireAdmin();
 
-$database = new Database();
-$db = $database->getConnection();
-$user = new User($db);
-$hall = new Hall($db);
-$booking = new Booking($db);
+$conn = getConnection();
 
 $message = '';
 $error = '';
-
 $editUser = null;
+$editHall = null;
 
-// Handle user edit (load user for editing)
+// --- Load user for editing ---
 if (isset($_GET['edit_user'])) {
     $edit_user_id = $_GET['edit_user'];
-    // Get user data by id
-    foreach ($user->getAllUsers() as $u) {
+    $all_users = getAllUsers($conn);
+    foreach ($all_users as $u) {
         if ($u['id'] == $edit_user_id) {
             $editUser = $u;
             break;
         }
     }
-    if (!$editUser) {
-        $error = "User not found.";
-    }
+    if (!$editUser) $error = "User not found.";
 }
 
-// Handle unified user form (add or edit)
+// --- Handle user add/edit form ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_form_submit'])) {
     $username = trim($_POST['username']);
     $email = trim($_POST['email']);
     $role = $_POST['role'];
-    $password = isset($_POST['password']) ? $_POST['password'] : '';
-    $confirm_password = isset($_POST['confirm_password']) ? $_POST['confirm_password'] : '';
+    $password = $_POST['password'] ?? '';
+    $confirm_password = $_POST['confirm_password'] ?? '';
 
-    // Editing an existing user
-    if (isset($_POST['user_id']) && $_POST['user_id'] !== '') {
+    if (!empty($_POST['user_id'])) {
+        // Editing existing user
         $user_id = $_POST['user_id'];
         if ($password !== '' && $password !== $confirm_password) {
             $error = "Passwords do not match.";
-            // Re-populate editUser for form
-            $editUser = [
-                'id' => $user_id,
-                'username' => $username,
-                'email' => $email,
-                'role' => $role,
-                'created_at' => $_POST['created_at'] ?? ''
-            ];
         } else {
-            // Only update password if provided
-            $updateResult = $user->update($user_id, $username, $email, $password, $role);
-            if ($updateResult) {
-                $message = "User updated successfully.";
-                // Refresh user list after update
-                $all_users = $user->getAllUsers();
-                $editUser = null;
-            } else {
-                $error = "Failed to update user.";
-                // Re-populate editUser for form
-                $editUser = [
-                    'id' => $user_id,
-                    'username' => $username,
-                    'email' => $email,
-                    'role' => $role,
-                    'created_at' => $_POST['created_at'] ?? ''
-                ];
-            }
+            $updateResult = updateUser($conn, $user_id, $username, $email, $role, $password ?: null);
+            if ($updateResult) $message = "User updated successfully.";
+            else $error = "Failed to update user.";
         }
     } else {
-        // Creating a new user
-        if ($password === '' || $confirm_password === '') {
-            $error = "Password fields are required for new users.";
-        } elseif ($password !== $confirm_password) {
-            $error = "Passwords do not match.";
-        } else {
-            $user->username = $username;
-            $user->email = $email;
-            $user->password = $password;
-            $user->role = $role;
-            // Check for unique username/email
-            $existingUsers = $user->getAllUsers();
+        // Creating new user
+        if ($password === '' || $confirm_password === '') $error = "Password fields are required.";
+        elseif ($password !== $confirm_password) $error = "Passwords do not match.";
+        else {
+            // Check if username/email exists
+            $existingUsers = getAllUsers($conn);
             $userExists = false;
             foreach ($existingUsers as $u) {
                 if ($u['username'] === $username || $u['email'] === $email) {
@@ -96,170 +60,100 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_form_submit'])) 
                     break;
                 }
             }
-            if ($userExists) {
-                $error = "User with this username or email already exists.";
-            } else {
-                if ($user->create()) {
-                    $message = "User created successfully.";
-                } else {
-                    $error = "Failed to create user.";
-                }
+            if ($userExists) $error = "User with this username or email already exists.";
+            else {
+                if (createUser($conn, $username, $password, $email, $role)) $message = "User created successfully.";
+                else $error = "Failed to create user.";
             }
         }
     }
 }
 
-// Handle user deletion
+// --- Delete user ---
 if (isset($_GET['delete_user'])) {
     $user_id = $_GET['delete_user'];
-
-    // Use new User delete() method that returns ['success'=>bool, 'message'=>string]
-    $deleteResult = $user->delete($user_id);
-
-    if (isset($deleteResult['success']) && $deleteResult['success']) {
-        $message = $deleteResult['message'] ?? 'User deleted failed';
-        // Do not redirect, so alert shows
-    } else {
-        $error = $deleteResult['message'] ?? 'User deleted successfully';
-    }
+    if (deleteUser($conn, $user_id)) $message = "User deleted successfully.";
+    else $error = "Failed to delete user.";
 }
 
+// --- Load hall for editing ---
+if (isset($_GET['edit_hall'])) {
+    $hall_id = $_GET['edit_hall'];
+    $editHall = getHallById($conn, $hall_id);
+    if (!$editHall) $error = "Hall not found.";
+}
 
-
-// Handle hall deletion
+// --- Delete hall ---
 if (isset($_GET['delete_hall'])) {
     $hall_id = $_GET['delete_hall'];
-
-    // Optional: delete hall image from server
-    $hallData = $hall->getHallById($hall_id);
+    $hallData = getHallById($conn, $hall_id);
     if ($hallData && !empty($hallData['image_url']) && file_exists($hallData['image_url'])) {
         unlink($hallData['image_url']);
     }
-
-    // Use new Hall delete() method that returns ['success'=>bool, 'message'=>string]
-    $deleteResult = $hall->delete($hall_id);
-    if (isset($deleteResult['success']) && $deleteResult['success']) {
-        $message = $deleteResult['message'] ?? 'Hall deleted successfully';
-        // Do not redirect, so alert shows
-    } else {
-        $error = $deleteResult['message'] ?? 'Failed to delete hall';
-    }
+    $deleteResult = deleteHall($conn, $hall_id);
+    if ($deleteResult['success']) $message = $deleteResult['message'];
+    else $error = $deleteResult['message'];
 }
 
-// Edit hall
-$editHall = null;
+// --- Handle hall add/edit ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $is_add = isset($_POST['add_hall']);
+    $is_update = isset($_POST['update_hall']);
+    $hall_id = $_POST['hall_id'] ?? null;
 
-if (isset($_GET['edit_hall'])) {
-    $hall_id = $_GET['edit_hall'];
-    $editHall = $hall->getHallById($hall_id);
-    if (!$editHall) {
-        $error = "Hall not found.";
-    }
-}
+    $hall_name = $_POST['name'] ?? '';
+    $hall_location = $_POST['location'] ?? '';
+    $hall_capacity = $_POST['capacity'] ?? '';
+    $hall_type = $_POST['type'] ?? '';
+    $hall_price = $_POST['price_per_hour'] ?? '';
+    $hall_amenities = $_POST['amenities'] ?? '';
+    $hall_description = $_POST['description'] ?? '';
 
-// Handle booking status updates
-if (isset($_POST['update_booking_status'])) {
-    $booking_id = $_POST['booking_id'];
-    $new_status = $_POST['status'];
-    
-    if ($booking->updateStatus($booking_id, $new_status)) {
-        $message = 'Booking status updated successfully';
-    } else {
-        $error = 'Failed to update booking status';
-    }
-}
-
-// Handle new hall creation
-if (isset($_POST['add_hall'])) {
-    $hall->name = $_POST['name'];
-    $hall->description = $_POST['description'];
-    $hall->capacity = $_POST['capacity'];
-    $hall->type = $_POST['type'];
-    $hall->location = $_POST['location'];
-    $hall->price_per_hour = $_POST['price_per_hour'];
-
-    // Handle file upload
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = 'uploads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        $fileTmpPath = $_FILES['image']['tmp_name'];
-        $fileName = basename($_FILES['image']['name']);
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
-        $newFileName = uniqid('hall_', true) . '.' . $fileExt;
-        $destPath = $uploadDir . $newFileName;
-
-        if (move_uploaded_file($fileTmpPath, $destPath)) {
-            $hall->image_url = $destPath;
-        } else {
-            $hall->image_url = '';
-        }
-    } else {
-        $hall->image_url = '';
-    }
-
-    $hall->amenities = $_POST['amenities'];
-    
-    if ($hall->create()) {
-        $message = 'Hall added successfully';
-    } else {
-        $error = 'Failed to add hall';
-    }
-}
-
-// Hall update 
-// Handle hall update
-if (isset($_POST['update_hall'])) {
-    $hall_id = $_POST['hall_id'];
-    $hall->name = $_POST['name'];
-    $hall->description = $_POST['description'];
-    $hall->capacity = $_POST['capacity'];
-    $hall->type = $_POST['type'];
-    $hall->location = $_POST['location'];
-    $hall->price_per_hour = $_POST['price_per_hour'];
-    $hall->amenities = $_POST['amenities'];
-
-    // Handle optional new image
+    // Handle image upload
+    $image_url = $_POST['current_image'] ?? '';
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $uploadDir = 'uploads/';
         if (!is_dir($uploadDir)) mkdir($uploadDir, 0755, true);
-
         $fileTmpPath = $_FILES['image']['tmp_name'];
-        $fileName = basename($_FILES['image']['name']);
-        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $fileExt = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
         $newFileName = uniqid('hall_', true) . '.' . $fileExt;
         $destPath = $uploadDir . $newFileName;
-
         if (move_uploaded_file($fileTmpPath, $destPath)) {
-            // Delete old image
-            if (!empty($_POST['current_image']) && file_exists($_POST['current_image'])) {
-                unlink($_POST['current_image']);
-            }
-            $hall->image_url = $destPath;
+            if (!empty($_POST['current_image']) && file_exists($_POST['current_image'])) unlink($_POST['current_image']);
+            $image_url = $destPath;
         }
-    } else {
-        $hall->image_url = $_POST['current_image']; // keep old image
     }
 
-if ($hall->update($hall_id)) {
-    $message = "Hall updated successfully.";
-    // Reset edit mode so the form returns to "Add New Hall"
-    $editHall = null;
-    $is_edit = false;
-} else {
-    $error = "Failed to update hall.";
-}
+    if ($is_add) {
+        if (createHall($conn, $hall_name, $hall_description, $hall_capacity, $hall_location, $hall_price, $hall_amenities, $hall_type, $_FILES['image'] ?? null)) {
+            $message = "Hall added successfully.";
+        } else $error = "Failed to add hall.";
+    }
+
+    if ($is_update && $hall_id) {
+        if (updateHall($conn, $hall_id, $hall_name, $hall_description, $hall_capacity, $hall_type, $hall_location, $hall_price, $hall_amenities, $image_url)) {
+            $message = "Hall updated successfully.";
+            $editHall = null;
+        } else $error = "Failed to update hall.";
+    }
 }
 
+// --- Handle booking status updates ---
+if (isset($_POST['update_booking_status'])) {
+    $booking_id = $_POST['booking_id'];
+    $new_status = $_POST['status'];
+    if (updateBookingStatus($conn, $booking_id, $new_status)) $message = "Booking status updated successfully.";
+    else $error = "Failed to update booking status.";
+}
 
-// Refresh data after any add/update/delete
-$all_bookings = $booking->getAllBookings();
-$all_users = $user->getAllUsers();
-$all_halls = $hall->getAllHalls();
+// --- Fetch updated data ---
+$all_bookings = getAllBookings($conn);
+$all_users = getAllUsers($conn);
+$all_halls = getAllHalls($conn);
 
 include_once 'includes/header.php';
 ?>
+
 
 <div class="admin-sidebar">
     <a href="#add-hall">Add New Hall</a>
@@ -409,7 +303,7 @@ include_once 'includes/header.php';
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;"><?= htmlspecialchars($hall['type']) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9;">LKR <?= number_format($hall['price_per_hour'], 2) ?></td>
                             <td style="padding: 1rem; border-bottom: 1px solid #e1e5e9; align-items: center; display: flex; flex-direction: column;">
-                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem;">Edit</a>
+                                <a href="admin.php?edit_hall=<?= $hall['id'] ?>" class="btn btn-secondary form-button" style="margin:2px 0; font-size: 0.875rem; background-color: #1e5a76ff;">Edit</a>
                                 <a href="admin.php?delete_hall=<?= $hall['id'] ?>" class="btn btn-danger form-button" style="margin:2px 0; font-size: 0.875rem;" onclick="return confirm('Are you sure you want to delete this hall?')">Delete</a>
                             </td>
                         </tr>
@@ -543,7 +437,7 @@ include_once 'includes/header.php';
         </div>
     <!-- User Management -->
     <div id="user-management" class="admin-task-container" >
-        <h3>User Management</h3><br>
+        <h4>Users</h4><br>
         
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden;">
